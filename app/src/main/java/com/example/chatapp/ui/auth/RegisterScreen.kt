@@ -7,30 +7,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.chatapp.ui.navigation.Screen
 
 @Composable
-fun RegisterScreen(
-    navController: NavController,
-    viewModel: AuthViewModel = viewModel()
-) {
+fun RegisterScreen(navController: NavController) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    
-    val loading by viewModel.loading.collectAsState()
-    val error by viewModel.error.collectAsState()
-    
+    var message by remember { mutableStateOf<String?>(null) }
+
     Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Text("Create Account", style = MaterialTheme.typography.headlineMedium)
         Spacer(Modifier.height(32.dp))
-        
+
         OutlinedTextField(
             value = name,
             onValueChange = { name = it },
@@ -38,7 +34,7 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(16.dp))
-        
+
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
@@ -46,7 +42,7 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(16.dp))
-        
+
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
@@ -55,30 +51,22 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(24.dp))
-        
-        if (loading) {
-            CircularProgressIndicator()
-        } else {
-            Button(
-                onClick = { 
-                    viewModel.register(email, password, name) {
-                        // After success register, user is logged in automatically by Firebase
-                        navController.navigate(Screen.Home.route) {
-                            popUpTo(0) // clear backstack
-                        }
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Register")
-            }
-            
-            TextButton(onClick = { navController.popBackStack() }) {
-                Text("Back to Login")
-            }
+
+        Button(
+            onClick = {
+                // TODO: When cloud auth is ready, call Firebase register here
+                message = "Registration will be available when cloud features are enabled. For now, use admin/1234."
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Register")
         }
-        
-        error?.let { 
+
+        TextButton(onClick = { navController.popBackStack() }) {
+            Text("Back to Login")
+        }
+
+        message?.let {
             Spacer(Modifier.height(8.dp))
             Text(text = it, color = MaterialTheme.colorScheme.error)
         }

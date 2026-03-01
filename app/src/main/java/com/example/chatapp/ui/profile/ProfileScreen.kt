@@ -1,97 +1,48 @@
 package com.example.chatapp.ui.profile
 
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.chatapp.data.repository.AuthRepository
-import com.example.chatapp.data.repository.UserRepository
-import com.example.chatapp.domain.model.AuthResult
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import com.example.chatapp.ui.AppViewModel
 
-class ProfileViewModel(
-    private val userRepository: UserRepository = UserRepository(),
-    private val authRepository: AuthRepository = AuthRepository()
-) : ViewModel() {
-
-    private val currentUserId = authRepository.getCurrentUser()?.uid ?: ""
-
-    private val _name = MutableStateFlow("")
-    val name = _name.asStateFlow()
-
-    private val _status = MutableStateFlow("")
-    val status = _status.asStateFlow()
-
-    private val _photoUrl = MutableStateFlow<String?>(null)
-    val photoUrl = _photoUrl.asStateFlow()
-
-    private val _loading = MutableStateFlow(false)
-    val loading = _loading.asStateFlow()
-
-    init {
-        loadProfile()
-    }
-
-    private fun loadProfile() = viewModelScope.launch {
-        if (currentUserId.isEmpty()) return@launch
-        _loading.value = true
-        when (val res = userRepository.getUserProfile(currentUserId)) {
-            is AuthResult.Success -> {
-                _name.value = res.data.name
-                _status.value = res.data.status ?: "Available"
-                _photoUrl.value = res.data.profilePhotoUrl
-            }
-            else -> {} // Handle error
-        }
-        _loading.value = false
-    }
-
-    fun updateProfile(newName: String, newStatus: String) = viewModelScope.launch {
-        _loading.value = true
-        userRepository.updateProfile(currentUserId, newName, newStatus)
-        _name.value = newName
-        _status.value = newStatus
-        _loading.value = false
-    }
-}
+private val AppBlue = Color(0xFF1565C0)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     navController: NavController,
-    viewModel: ProfileViewModel = viewModel()
+    appViewModel: AppViewModel = viewModel()
 ) {
-    val name by viewModel.name.collectAsState()
-    val status by viewModel.status.collectAsState()
-    // val photoUrl by viewModel.photoUrl.collectAsState() // Skipped Coil image loading implementation here for brevity 
-    val loading by viewModel.loading.collectAsState()
-
-    var editName by remember(name) { mutableStateOf(name) }
-    var editStatus by remember(status) { mutableStateOf(status) }
+    val context = LocalContext.current
+    var editName by remember { mutableStateOf("admin") }
+    var editStatus by remember { mutableStateOf("Available") }
+    var saved by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Profile") },
+                title = { Text("Profile", color = Color.White) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = AppBlue)
             )
         }
     ) { padding ->
@@ -102,16 +53,27 @@ fun ProfileScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            
-            // Temporary placeholder for Image using an Icon
-            IconButton(
-                onClick = { /* Todo: Image uploading */ },
-                modifier = Modifier.size(100.dp)
+            Spacer(Modifier.height(16.dp))
+
+            // Profile picture placeholder
+            Box(
+                modifier = Modifier
+                    .size(100.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFFDFE5E7)),
+                contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Default.Person, contentDescription = "Profile Photo placeholder", modifier = Modifier.fillMaxSize())
+                Icon(
+                    Icons.Default.AccountCircle,
+                    contentDescription = "Profile Photo",
+                    modifier = Modifier.size(100.dp),
+                    tint = Color.White
+                )
             }
-            Text("Profile photo uploads are on hold", style = MaterialTheme.typography.bodySmall)
-            
+
+            Spacer(Modifier.height(8.dp))
+            Text("Tap to change photo", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+
             Spacer(Modifier.height(32.dp))
 
             OutlinedTextField(
@@ -130,15 +92,34 @@ fun ProfileScreen(
             )
             Spacer(Modifier.height(24.dp))
 
-            if (loading) {
-                CircularProgressIndicator()
-            } else {
-                Button(
-                    onClick = { viewModel.updateProfile(editName, editStatus) },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Save Changes")
-                }
+            Button(
+                onClick = {
+                    // TODO: Save profile to cloud when ready
+                    saved = true
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Save Changes")
+            }
+
+            if (saved) {
+                Spacer(Modifier.height(8.dp))
+                Text("Profile saved locally!", color = AppBlue, fontWeight = FontWeight.SemiBold)
+            }
+
+            Spacer(Modifier.height(32.dp))
+
+            OutlinedButton(
+                onClick = {
+                    appViewModel.logout(context)
+                    navController.navigate("login") {
+                        popUpTo(0)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red)
+            ) {
+                Text("Logout")
             }
         }
     }

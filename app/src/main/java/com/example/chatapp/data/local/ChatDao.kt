@@ -23,6 +23,9 @@ interface ChatDao {
     @Query("SELECT * FROM messages WHERE (senderId = :myUserId AND receiverId = :otherUserId) OR (senderId = :otherUserId AND receiverId = :myUserId) ORDER BY timestamp ASC")
     fun getMessagesWithUser(myUserId: String, otherUserId: String): Flow<List<MessageEntity>>
 
+    @Query("SELECT * FROM messages WHERE (senderId = :myUserId AND receiverId = :otherUserId) OR (senderId = :otherUserId AND receiverId = :myUserId) ORDER BY timestamp DESC LIMIT 1")
+    fun getLatestMessageForUser(myUserId: String, otherUserId: String): Flow<MessageEntity?>
+
     @Query("SELECT * FROM messages ORDER BY timestamp DESC LIMIT 1")
     fun getLastMessageFlow(): Flow<MessageEntity?>
 }

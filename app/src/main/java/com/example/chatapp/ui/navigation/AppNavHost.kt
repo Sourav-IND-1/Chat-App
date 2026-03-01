@@ -1,13 +1,13 @@
 package com.example.chatapp.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.chatapp.ui.AppViewModel
-
 import com.example.chatapp.ui.auth.LoginScreen
 import com.example.chatapp.ui.auth.RegisterScreen
 import com.example.chatapp.ui.chat.ChatScreen
@@ -20,7 +20,8 @@ fun AppNavHost(
     navController: NavHostController = rememberNavController(),
     appViewModel: AppViewModel = viewModel()
 ) {
-    val startDestination = if (appViewModel.isUserLoggedIn()) {
+    val context = LocalContext.current
+    val startDestination = if (appViewModel.isUserLoggedIn(context)) {
         Screen.Home.route
     } else {
         Screen.Login.route
