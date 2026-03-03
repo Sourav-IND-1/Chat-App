@@ -5,17 +5,26 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.chatapp.data.crypto.KeyManager
+import com.example.chatapp.data.repository.AuthRepository
 import com.example.chatapp.ui.navigation.Screen
+import kotlinx.coroutines.launch
 
 @Composable
 fun RegisterScreen(navController: NavController) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val authRepo = remember { AuthRepository() }
+
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var message by remember { mutableStateOf<String?>(null) }
+    var isLoading by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -31,7 +40,8 @@ fun RegisterScreen(navController: NavController) {
             value = name,
             onValueChange = { name = it },
             label = { Text("Display Name") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !isLoading
         )
         Spacer(Modifier.height(16.dp))
 
@@ -39,7 +49,8 @@ fun RegisterScreen(navController: NavController) {
             value = email,
             onValueChange = { email = it },
             label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !isLoading
         )
         Spacer(Modifier.height(16.dp))
 
@@ -48,18 +59,53 @@ fun RegisterScreen(navController: NavController) {
             onValueChange = { password = it },
             label = { Text("Password (min 6 chars)") },
             visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !isLoading
         )
         Spacer(Modifier.height(24.dp))
 
-        Button(
-            onClick = {
-                // TODO: When cloud auth is ready, call Firebase register here
-                message = "Registration will be available when cloud features are enabled. For now, use admin/1234."
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Register")
+        if (isLoading) {
+            CircularProgressIndicator()
+            Spacer(Modifier.height(8.dp))
+            Text("Creating account…", style = MaterialTheme.typography.bodySmall)
+        } else {
+            Button(
+                onClick = {
+                    if (name.isBlank() || email.isBlank() || password.isBlank()) {
+                        message = "Please fill in all fields"
+                        return@Button
+                    }
+                    if (password.length < 6) {
+                        message = "Password must be at least 6 characters"
+                        return@Button
+                    }
+                    message = null
+                    isLoading = true
+                    scope.launch {
+                        val result = authRepo.register(email.trim(), password, name.trim())
+                        val user = authRepo.getCurrentUser()
+                        if (user != null) {
+                            try {
+                                KeyManager.initIdentityKey(context, user.uid, name.trim())
+                            } catch (e: Exception) {
+                                // Non-fatal
+                            }
+                            navController.navigate(Screen.Home.route) {
+                                popUpTo(Screen.Login.route) { inclusive = true }
+                            }
+                        } else {
+                            message = when (result) {
+                                is com.example.chatapp.domain.model.AuthResult.Error -> result.message
+                                else -> "Registration failed. Please try again."
+                            }
+                            isLoading = false
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Register")
+            }
         }
 
         TextButton(onClick = { navController.popBackStack() }) {

@@ -1,49 +1,108 @@
 package com.example.chatapp.ui.search
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.chatapp.data.local.AppDatabase
-import com.example.chatapp.data.local.UserEntity
+import com.example.chatapp.data.repository.UserRepository
+import com.example.chatapp.domain.model.User
+import com.example.chatapp.ui.home.PersonListItem
 import com.example.chatapp.ui.navigation.Screen
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 
 private val AppBlue = Color(0xFF1565C0)
 
+@OptIn(FlowPreview::class)
+class SearchViewModel : ViewModel() {
+    private val userRepo = UserRepository()
+    private val currentUid: String
+        get() = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: ""
+
+    private val _results = MutableStateFlow<List<User>>(emptyList())
+    val results: StateFlow<List<User>> = _results
+
+    private val _loading = MutableStateFlow(false)
+    val loading: StateFlow<Boolean> = _loading
+
+    private val queryFlow = MutableStateFlow("")
+
+    init {
+        viewModelScope.launch {
+            queryFlow
+                .debounce(300)
+                .distinctUntilChanged()
+                .collect { q ->
+                    if (q.isBlank()) {
+                        _loading.value = true
+                        _results.value = userRepo.getAllUsers(currentUid)
+                        _loading.value = false
+                    } else {
+                        _loading.value = true
+                        _results.value = userRepo.searchUsers(q, currentUid)
+                        _loading.value = false
+                    }
+                }
+        }
+    }
+
+    fun onQueryChange(q: String) {
+        viewModelScope.launch { queryFlow.emit(q) }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen(navController: NavController) {
+fun SearchScreen(
+    navController: NavController,
+    viewModel: SearchViewModel = viewModel()
+) {
     var query by remember { mutableStateOf("") }
-    val context = LocalContext.current
-    val db = remember { AppDatabase.getDatabase(context) }
+    val results by viewModel.results.collectAsState()
+    val loading by viewModel.loading.collectAsState()
 
-    // Search from local contacts
-    val allContacts by db.chatDao().getAllContacts().collectAsState(initial = emptyList())
-    val filtered = allContacts.filter {
-        it.name.contains(query, ignoreCase = true) || it.userId.contains(query, ignoreCase = true)
-    }
+    // Load all users on first open
+    LaunchedEffect(Unit) { viewModel.onQueryChange("") }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Search", color = Color.White) },
+                title = {
+                    OutlinedTextField(
+                        value = query,
+                        onValueChange = {
+                            query = it
+                            viewModel.onQueryChange(it)
+                        },
+                        placeholder = { Text("Search users…", color = Color.White.copy(alpha = 0.7f)) },
+                        singleLine = true,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = Color.Transparent,
+                            unfocusedBorderColor = Color.Transparent,
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            cursorColor = Color.White
+                        ),
+                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = Color.White) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
@@ -53,64 +112,34 @@ fun SearchScreen(navController: NavController) {
             )
         }
     ) { padding ->
-        Column(modifier = Modifier
-            .padding(padding)
-            .padding(16.dp)) {
-            OutlinedTextField(
-                value = query,
-                onValueChange = { query = it },
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Search contacts...") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            if (filtered.isEmpty() && query.isNotEmpty()) {
-                Text("No contacts found", color = Color.Gray)
-            } else {
-                LazyColumn {
-                    items(filtered) { user ->
-                        SearchResultItem(
-                            user = user,
-                            onClick = {
-                                navController.navigate(Screen.Chat.createRoute(user.userId, user.name))
-                            }
-                        )
-                    }
+        if (loading) {
+            Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = AppBlue)
+            }
+        } else if (results.isEmpty()) {
+            Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
+                Text(
+                    if (query.isEmpty()) "No users found on network" else "No users match \"$query\"",
+                    color = Color.Gray
+                )
+            }
+        } else {
+            LazyColumn(modifier = Modifier.fillMaxSize().padding(padding)) {
+                items(results) { user ->
+                    PersonListItem(
+                        user = user,
+                        alreadyInContacts = false,
+                        onClick = {
+                            navController.navigate(Screen.Chat.createRoute(user.userId, user.name))
+                        }
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier.padding(start = 72.dp),
+                        thickness = 0.5.dp,
+                        color = Color(0xFFE0E0E0)
+                    )
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun SearchResultItem(user: UserEntity, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .size(44.dp)
-                .clip(CircleShape)
-                .background(Color(0xFFDFE5E7)),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                Icons.Default.AccountCircle,
-                contentDescription = "Profile",
-                modifier = Modifier.size(44.dp),
-                tint = Color.White
-            )
-        }
-        Spacer(modifier = Modifier.width(12.dp))
-        Column {
-            Text(text = user.name, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
-            Text(text = user.status ?: "Available", fontSize = 13.sp, color = Color.Gray)
         }
     }
 }

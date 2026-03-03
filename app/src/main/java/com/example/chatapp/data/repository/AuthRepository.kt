@@ -3,12 +3,15 @@ package com.example.chatapp.data.repository
 import com.example.chatapp.domain.model.AuthResult
 import com.example.chatapp.domain.model.User
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
 class AuthRepository(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
-    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
+    private val rtdb: DatabaseReference = RtdbHelper.ref
 ) {
     fun getCurrentUser() = auth.currentUser
 
@@ -25,15 +28,19 @@ class AuthRepository(
         return try {
             val result = auth.createUserWithEmailAndPassword(email, password).await()
             val userId = result.user?.uid
-            
+
             if (userId != null) {
-                // Initialize user profile in Firestore
                 val user = User(
                     userId = userId,
                     name = name,
                     status = "Available"
                 )
+                // Write to Firestore (existing)
                 firestore.collection("users").document(userId).set(user).await()
+                // Write to RTDB so UserRepository / People tab can find this user
+                rtdb.child("users").child(userId).setValue(
+                    mapOf("name" to name, "status" to "Available")
+                ).await()
                 AuthResult.Success(Unit)
             } else {
                 AuthResult.Error("Failed to create user")

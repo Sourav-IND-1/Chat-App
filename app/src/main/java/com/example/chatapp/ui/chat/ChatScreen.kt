@@ -1,6 +1,5 @@
 package com.example.chatapp.ui.chat
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -8,9 +7,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,14 +18,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.chatapp.utils.ConnectivityObserver
+import com.example.chatapp.utils.NetworkStatus
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.chatapp.data.local.AppDatabase
+import com.example.chatapp.data.repository.ChannelState
 import com.example.chatapp.data.repository.ChatRepository
 import com.example.chatapp.domain.model.Message
 import kotlinx.coroutines.flow.SharingStarted
@@ -37,36 +40,76 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-// App color scheme — blue/white
+// App color scheme
 private val AppBlue = Color(0xFF1565C0)
-private val SentBubbleColor = Color(0xFFBBDEFB)    // Light blue for sent
-private val ReceivedBubbleColor = Color(0xFFF5F5F5) // Light grey for received
+private val SentBubbleColor = Color(0xFFBBDEFB)
+private val ReceivedBubbleColor = Color(0xFFF5F5F5)
 private val ChatBackground = Color(0xFFFAFAFA)
 
 class ChatViewModel(
     private val chatRepository: ChatRepository,
-    private val otherUserId: String
+    private val otherUserId: String,
+    private val context: android.content.Context
 ) : ViewModel() {
 
     val messages: StateFlow<List<Message>> = chatRepository.getMessagesWithUser(otherUserId)
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    val channelState: StateFlow<ChannelState> = chatRepository.channelState
+    val errorMessage: StateFlow<String?> = chatRepository.errorMessage
+
+    val networkStatus: StateFlow<NetworkStatus> = ConnectivityObserver.observe(context)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), NetworkStatus.Available)
+
+    init {
+        viewModelScope.launch {
+            chatRepository.establishChannel(otherUserId)
+            if (chatRepository.channelState.value == ChannelState.READY) {
+                chatRepository.listenForMessages(otherUserId)
+            }
+        }
+    }
 
     fun sendMessage(content: String) {
         viewModelScope.launch {
             chatRepository.sendMessage(otherUserId, content)
         }
     }
+
+    fun clearError() = chatRepository.clearError()
+
+    override fun onCleared() {
+        super.onCleared()
+        chatRepository.stopListening()
+    }
 }
 
 class ChatViewModelFactory(
     private val otherUserId: String,
+    private val otherUserName: String,
     private val context: android.content.Context
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val db = AppDatabase.getDatabase(context)
-        val repo = ChatRepository(db.chatDao(), currentUserId = "admin")
+        // Save contact to Room if not already there (so they appear in Chats tab)
+        val existing = db.chatDao().getUserById(otherUserId)
+        if (existing == null) {
+            db.chatDao().insertUser(
+                com.example.chatapp.data.local.UserEntity(
+                    userId = otherUserId,
+                    name = otherUserName,
+                    profilePhotoUrl = null,
+                    status = "Available"
+                )
+            )
+        }
+        val repo = ChatRepository(
+            chatDao = db.chatDao(),
+            currentUserId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: "",
+            context = context
+        )
         @Suppress("UNCHECKED_CAST")
-        return ChatViewModel(repo, otherUserId) as T
+        return ChatViewModel(repo, otherUserId, context) as T
     }
 }
 
@@ -78,13 +121,29 @@ fun ChatScreen(
     userName: String,
 ) {
     val context = LocalContext.current
-    val viewModel: ChatViewModel = viewModel(factory = ChatViewModelFactory(userId, context))
+    val viewModel: ChatViewModel = viewModel(factory = ChatViewModelFactory(userId, userName, context))
     val messages by viewModel.messages.collectAsState()
+    val channelState by viewModel.channelState.collectAsState()
+    val networkStatus by viewModel.networkStatus.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
     val listState = rememberLazyListState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     var messageText by remember { mutableStateOf("") }
 
-    // Auto-scroll to bottom when new messages arrive
+    // Show repo errors as snackbars
+    LaunchedEffect(errorMessage) {
+        errorMessage?.let { msg ->
+            snackbarHostState.showSnackbar(
+                message = msg,
+                actionLabel = "Dismiss",
+                duration = SnackbarDuration.Long
+            )
+            viewModel.clearError()
+        }
+    }
+
+    // Auto-scroll to bottom
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
             listState.animateScrollToItem(messages.size - 1)
@@ -96,27 +155,23 @@ fun ChatScreen(
             TopAppBar(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(
-                            modifier = Modifier
-                                .size(36.dp)
-                                .clip(CircleShape)
-                                .background(Color(0xFFBBDEFB)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                Icons.Default.AccountCircle,
-                                contentDescription = "Profile",
-                                modifier = Modifier.size(36.dp),
-                                tint = Color.White
-                            )
-                        }
+                        com.example.chatapp.ui.home.UserAvatar(name = userName, size = 36)
                         Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            userName,
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp
-                        )
+                        Column {
+                            Text(
+                                userName,
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp
+                            )
+                            if (channelState == ChannelState.READY) {
+                                Text(
+                                    "🔒 end-to-end encrypted",
+                                    color = Color.White.copy(alpha = 0.7f),
+                                    fontSize = 11.sp
+                                )
+                            }
+                        }
                     }
                 },
                 navigationIcon = {
@@ -128,11 +183,10 @@ fun ChatScreen(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = AppBlue
-                )
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = AppBlue)
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         containerColor = ChatBackground
     ) { padding ->
         Column(
@@ -140,6 +194,63 @@ fun ChatScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
+            // Offline banner
+            if (networkStatus != NetworkStatus.Available) {
+                Surface(color = Color(0xFFFFF8E1), modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        "📡 No internet connection — messages saved locally",
+                        modifier = Modifier.padding(10.dp),
+                        fontSize = 12.sp,
+                        color = Color(0xFF5D4037),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+            // Channel state banner
+            when (channelState) {
+                ChannelState.PENDING -> {
+                    Surface(
+                        color = Color(0xFFFFF3E0),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                strokeWidth = 2.dp,
+                                color = Color(0xFFE65100)
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                "🔐 Establishing secure channel…",
+                                fontSize = 13.sp,
+                                color = Color(0xFFE65100)
+                            )
+                        }
+                    }
+                }
+                ChannelState.ERROR -> {
+                    Surface(
+                        color = Color(0xFFFFEBEE),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            "⚠️ Could not establish secure channel. The other user may not have a key yet.",
+                            modifier = Modifier.padding(12.dp),
+                            fontSize = 13.sp,
+                            color = Color(0xFFC62828),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+                ChannelState.READY -> {
+                    // No banner needed — status shown in toolbar subtitle
+                }
+            }
+
             // Messages list
             LazyColumn(
                 modifier = Modifier
@@ -179,7 +290,8 @@ fun ChatScreen(
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent
                         ),
-                        maxLines = 4
+                        maxLines = 4,
+                        enabled = channelState == ChannelState.READY
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     FloatingActionButton(
@@ -190,11 +302,14 @@ fun ChatScreen(
                             }
                         },
                         modifier = Modifier.size(48.dp),
-                        containerColor = AppBlue,
+                        containerColor = if (channelState == ChannelState.READY) AppBlue else Color.Gray,
                         shape = CircleShape
                     ) {
                         Icon(
-                            Icons.AutoMirrored.Filled.Send,
+                            if (channelState == ChannelState.READY)
+                                Icons.AutoMirrored.Filled.Send
+                            else
+                                Icons.Default.Lock,
                             contentDescription = "Send",
                             tint = Color.White,
                             modifier = Modifier.size(20.dp)

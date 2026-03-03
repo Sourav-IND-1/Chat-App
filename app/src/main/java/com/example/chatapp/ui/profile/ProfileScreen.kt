@@ -15,10 +15,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.chatapp.data.repository.UserRepository
 import com.example.chatapp.ui.AppViewModel
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 
 private val AppBlue = Color(0xFF1565C0)
 
@@ -29,8 +31,13 @@ fun ProfileScreen(
     appViewModel: AppViewModel = viewModel()
 ) {
     val context = LocalContext.current
-    var editName by remember { mutableStateOf("admin") }
+    val scope = rememberCoroutineScope()
+    val userRepo = remember { UserRepository() }
+    val firebaseUser = remember { FirebaseAuth.getInstance().currentUser }
+
+    var editName by remember { mutableStateOf(firebaseUser?.displayName ?: "") }
     var editStatus by remember { mutableStateOf("Available") }
+    var isSaving by remember { mutableStateOf(false) }
     var saved by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -74,13 +81,19 @@ fun ProfileScreen(
             Spacer(Modifier.height(8.dp))
             Text("Tap to change photo", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
 
+            firebaseUser?.email?.let { email ->
+                Spacer(Modifier.height(4.dp))
+                Text(email, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+            }
+
             Spacer(Modifier.height(32.dp))
 
             OutlinedTextField(
                 value = editName,
                 onValueChange = { editName = it },
                 label = { Text("Display Name") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isSaving
             )
             Spacer(Modifier.height(16.dp))
 
@@ -88,23 +101,39 @@ fun ProfileScreen(
                 value = editStatus,
                 onValueChange = { editStatus = it },
                 label = { Text("Status") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isSaving
             )
             Spacer(Modifier.height(24.dp))
 
             Button(
                 onClick = {
-                    // TODO: Save profile to cloud when ready
-                    saved = true
+                    val uid = firebaseUser?.uid ?: return@Button
+                    isSaving = true
+                    saved = false
+                    scope.launch {
+                        userRepo.updateUserProfile(uid, editName.trim(), editStatus.trim())
+                        isSaving = false
+                        saved = true
+                    }
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isSaving
             ) {
-                Text("Save Changes")
+                if (isSaving) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(18.dp),
+                        strokeWidth = 2.dp,
+                        color = Color.White
+                    )
+                } else {
+                    Text("Save Changes")
+                }
             }
 
             if (saved) {
                 Spacer(Modifier.height(8.dp))
-                Text("Profile saved locally!", color = AppBlue, fontWeight = FontWeight.SemiBold)
+                Text("Profile saved!", color = AppBlue, fontWeight = FontWeight.SemiBold)
             }
 
             Spacer(Modifier.height(32.dp))

@@ -1,55 +1,49 @@
 package com.example.chatapp.data.repository
 
-import android.net.Uri
-import com.example.chatapp.domain.model.AuthResult
+import android.util.Log
 import com.example.chatapp.domain.model.User
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.tasks.await
 
-class UserRepository(
-    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
-) {
+/**
+ * Fetches user data from Firebase Realtime Database.
+ * RTDB structure: /users/{userId}/{publicKey, name, status}
+ */
+class UserRepository {
+    private val rtdb = RtdbHelper.ref
 
-    suspend fun getUserProfile(userId: String): AuthResult<User> {
+    /** Get all registered users from RTDB (excluding the given userId). */
+    suspend fun getAllUsers(excludeUserId: String): List<User> {
         return try {
-            val snapshot = firestore.collection("users").document(userId).get().await()
-            val user = snapshot.toObject(User::class.java)
-            if (user != null) {
-                AuthResult.Success(user)
-            } else {
-                AuthResult.Error("User not found")
+            val snapshot = rtdb.child("users").get().await()
+            snapshot.children.mapNotNull { child ->
+                val uid = child.key ?: return@mapNotNull null
+                if (uid == excludeUserId) return@mapNotNull null
+                val name = child.child("name").getValue(String::class.java) ?: uid
+                val status = child.child("status").getValue(String::class.java) ?: "Available"
+                User(userId = uid, name = name, status = status)
             }
         } catch (e: Exception) {
-            AuthResult.Error(e.message ?: "Failed to fetch profile")
+            Log.e("UserRepository", "Failed to fetch users", e)
+            emptyList()
         }
     }
 
-    suspend fun updateProfile(userId: String, name: String, status: String): AuthResult<Unit> {
-        return try {
-            val updates = mapOf(
-                "name" to name,
-                "status" to status
-            )
-            firestore.collection("users").document(userId).update(updates).await()
-            AuthResult.Success(Unit)
-        } catch (e: Exception) {
-            AuthResult.Error(e.message ?: "Failed to update profile")
+    /** Search users by name prefix (case-insensitive, local filter after fetch). */
+    suspend fun searchUsers(query: String, excludeUserId: String): List<User> {
+        return getAllUsers(excludeUserId).filter {
+            it.name.contains(query, ignoreCase = true) ||
+            it.userId.contains(query, ignoreCase = true)
         }
     }
 
-    suspend fun searchUsers(query: String): AuthResult<List<User>> {
-        return try {
-            // A simple prefix search in Firestore
-            val snapshot = firestore.collection("users")
-                .whereGreaterThanOrEqualTo("name", query)
-                .whereLessThanOrEqualTo("name", query + "\uf8ff")
-                .get()
-                .await()
-                
-            val users = snapshot.documents.mapNotNull { it.toObject(User::class.java) }
-            AuthResult.Success(users)
+    /** Save/update current user's profile info in RTDB (does not overwrite publicKey). */
+    suspend fun updateUserProfile(userId: String, name: String, status: String) {
+        try {
+            rtdb.child("users").child(userId).child("name").setValue(name).await()
+            rtdb.child("users").child(userId).child("status").setValue(status).await()
         } catch (e: Exception) {
-            AuthResult.Error(e.message ?: "Search failed")
+            Log.e("UserRepository", "Failed to update profile", e)
         }
     }
 }
