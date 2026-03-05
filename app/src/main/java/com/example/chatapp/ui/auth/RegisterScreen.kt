@@ -9,8 +9,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.chatapp.data.crypto.KeyManager
 import com.example.chatapp.data.repository.AuthRepository
+import com.example.chatapp.domain.model.AuthResult
 import com.example.chatapp.ui.navigation.Screen
 import kotlinx.coroutines.launch
 
@@ -82,23 +82,25 @@ fun RegisterScreen(navController: NavController) {
                     message = null
                     isLoading = true
                     scope.launch {
-                        val result = authRepo.register(email.trim(), password, name.trim())
-                        val user = authRepo.getCurrentUser()
-                        if (user != null) {
-                            try {
-                                KeyManager.initIdentityKey(context, user.uid, name.trim())
-                            } catch (e: Exception) {
-                                // Non-fatal
+                        // register() handles everything:
+                        // Firebase Auth account + displayName + RTDB profile + EC key pair
+                        val result = authRepo.register(
+                            email = email.trim(),
+                            password = password,
+                            name = name.trim(),
+                            context = context
+                        )
+                        when (result) {
+                            is AuthResult.Success -> {
+                                navController.navigate(Screen.Home.route) {
+                                    popUpTo(Screen.Login.route) { inclusive = true }
+                                }
                             }
-                            navController.navigate(Screen.Home.route) {
-                                popUpTo(Screen.Login.route) { inclusive = true }
+                            is AuthResult.Error -> {
+                                message = result.message
+                                isLoading = false
                             }
-                        } else {
-                            message = when (result) {
-                                is com.example.chatapp.domain.model.AuthResult.Error -> result.message
-                                else -> "Registration failed. Please try again."
-                            }
-                            isLoading = false
+                            else -> { isLoading = false }
                         }
                     }
                 },

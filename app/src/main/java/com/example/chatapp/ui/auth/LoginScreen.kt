@@ -15,6 +15,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.chatapp.data.crypto.KeyManager
 import com.example.chatapp.data.repository.AuthRepository
+import com.example.chatapp.domain.model.AuthResult
 import com.example.chatapp.ui.AppViewModel
 import com.example.chatapp.ui.navigation.Screen
 import kotlinx.coroutines.launch
@@ -80,21 +81,18 @@ fun LoginScreen(
                         val result = authRepo.login(email.trim(), password)
                         val user = authRepo.getCurrentUser()
                         if (user != null) {
-                            try {
-                                KeyManager.initIdentityKey(
-                                    context,
-                                    user.uid,
-                                    user.displayName ?: email.substringBefore("@")
-                                )
-                            } catch (e: Exception) {
-                                // Non-fatal — key may already exist
-                            }
+                            // Re-publish public key if it's missing in RTDB
+                            authRepo.ensurePublicKey(
+                                context = context,
+                                uid = user.uid,
+                                displayName = user.displayName ?: email.substringBefore("@")
+                            )
                             navController.navigate(Screen.Home.route) {
                                 popUpTo(Screen.Login.route) { inclusive = true }
                             }
                         } else {
                             errorMessage = when (result) {
-                                is com.example.chatapp.domain.model.AuthResult.Error -> result.message
+                                is AuthResult.Error -> result.message
                                 else -> "Login failed. Check your credentials."
                             }
                             isLoading = false
@@ -110,39 +108,7 @@ fun LoginScreen(
                 Text("Don't have an account? Register")
             }
 
-            Spacer(Modifier.height(24.dp))
-            HorizontalDivider()
-            Spacer(Modifier.height(16.dp))
 
-            // ── Secondary: Admin bypass (dev/offline mode) ────────
-            Text(
-                "Dev / Offline Mode",
-                style = MaterialTheme.typography.labelSmall,
-                color = Color.Gray,
-                textAlign = TextAlign.Center
-            )
-            Spacer(Modifier.height(8.dp))
-            OutlinedButton(
-                onClick = {
-                    isLoading = true
-                    errorMessage = null
-                    scope.launch {
-                        try {
-                            KeyManager.initIdentityKey(context, "admin", "Admin")
-                        } catch (e: Exception) {
-                            // Key likely already exists — fine
-                        }
-                        appViewModel.setAdminBypass(context)
-                        isLoading = false
-                        navController.navigate(Screen.Home.route) {
-                            popUpTo(Screen.Login.route) { inclusive = true }
-                        }
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Continue as Admin (admin / 1234)", fontSize = 13.sp)
-            }
         }
 
         errorMessage?.let {

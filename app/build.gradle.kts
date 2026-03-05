@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -11,12 +13,24 @@ android {
         version = release(36)
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "com.example.chatapp"
         minSdk = 31
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
+
+        val localProperties = Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            localProperties.load(localPropertiesFile.inputStream())
+        }
+        val apiKey = localProperties.getProperty("FIREBASE_WEB_API_KEY") ?: ""
+        buildConfigField("String", "FIREBASE_WEB_API_KEY", "\"$apiKey\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -49,10 +63,11 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
 
-    // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
+    // BOM 32.8.0 → firebase-auth:22.3.1 (no mandatory reCAPTCHA on sign-up)
+    // firebase-auth 23.x+ requires reCAPTCHA Enterprise to be fully configured;
+    // 22.x uses the classic Identity Toolkit flow which works out of the box.
+    implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
     implementation("com.google.firebase:firebase-auth")
-    implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-database")
     
     // Navigation

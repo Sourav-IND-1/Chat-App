@@ -2,7 +2,6 @@ package com.example.chatapp.data.repository
 
 import android.util.Log
 import com.example.chatapp.domain.model.User
-import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.tasks.await
 
 /**
