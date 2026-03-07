@@ -7,4 +7,4 @@
 # chatting-27210 project (found in Firebase Console -> Project Settings -> General)
 # or your own Firebase project's Web API key if pointing to a different backend.
 
-FIREBASE_WEB_API_KEY=YOUR_FIREBASE_API_KEY_HERE
+FIREBASE_WEB_API_KEY=AIzaSyAcFtIQWn-Rzr99cg_2MzCIHjuqM0qQRI4

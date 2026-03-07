@@ -1,17 +1,17 @@
-#Thu Mar 05 21:01:12 IST 2026
-base.0=C\:\\Users\\Ayush\\AndroidStudioProjects\\Chat-App\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
-base.1=C\:\\Users\\Ayush\\AndroidStudioProjects\\Chat-App\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
-base.10=C\:\\Users\\Ayush\\AndroidStudioProjects\\Chat-App\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\9\\classes.dex
-base.11=C\:\\Users\\Ayush\\AndroidStudioProjects\\Chat-App\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes2.dex
-base.12=C\:\\Users\\Ayush\\AndroidStudioProjects\\Chat-App\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes3.dex
-base.2=C\:\\Users\\Ayush\\AndroidStudioProjects\\Chat-App\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\10\\classes.dex
-base.3=C\:\\Users\\Ayush\\AndroidStudioProjects\\Chat-App\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\13\\classes.dex
-base.4=C\:\\Users\\Ayush\\AndroidStudioProjects\\Chat-App\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\14\\classes.dex
-base.5=C\:\\Users\\Ayush\\AndroidStudioProjects\\Chat-App\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\15\\classes.dex
-base.6=C\:\\Users\\Ayush\\AndroidStudioProjects\\Chat-App\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\1\\classes.dex
-base.7=C\:\\Users\\Ayush\\AndroidStudioProjects\\Chat-App\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\6\\classes.dex
-base.8=C\:\\Users\\Ayush\\AndroidStudioProjects\\Chat-App\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\7\\classes.dex
-base.9=C\:\\Users\\Ayush\\AndroidStudioProjects\\Chat-App\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\8\\classes.dex
+#Sat Mar 07 19:04:54 IST 2026
+base.0=C\:\\Users\\sm273\\AndroidStudioProjects\\ChatApp\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
+base.1=C\:\\Users\\sm273\\AndroidStudioProjects\\ChatApp\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
+base.10=C\:\\Users\\sm273\\AndroidStudioProjects\\ChatApp\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\9\\classes.dex
+base.11=C\:\\Users\\sm273\\AndroidStudioProjects\\ChatApp\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes2.dex
+base.12=C\:\\Users\\sm273\\AndroidStudioProjects\\ChatApp\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes3.dex
+base.2=C\:\\Users\\sm273\\AndroidStudioProjects\\ChatApp\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\10\\classes.dex
+base.3=C\:\\Users\\sm273\\AndroidStudioProjects\\ChatApp\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\13\\classes.dex
+base.4=C\:\\Users\\sm273\\AndroidStudioProjects\\ChatApp\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\14\\classes.dex
+base.5=C\:\\Users\\sm273\\AndroidStudioProjects\\ChatApp\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\15\\classes.dex
+base.6=C\:\\Users\\sm273\\AndroidStudioProjects\\ChatApp\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\1\\classes.dex
+base.7=C\:\\Users\\sm273\\AndroidStudioProjects\\ChatApp\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\6\\classes.dex
+base.8=C\:\\Users\\sm273\\AndroidStudioProjects\\ChatApp\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\7\\classes.dex
+base.9=C\:\\Users\\sm273\\AndroidStudioProjects\\ChatApp\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\8\\classes.dex
 path.0=classes.dex
 path.1=0/classes.dex
 path.10=9/classes.dex
