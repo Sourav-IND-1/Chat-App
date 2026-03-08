@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.example.chatapp.data.crypto.EncryptedMessage
 import com.example.chatapp.data.crypto.KeyManager
+import com.example.chatapp.data.crypto.PublicKeyMissingException
 import com.example.chatapp.data.local.ChatDao
 import com.example.chatapp.data.local.MessageEntity
 import com.example.chatapp.domain.model.Message
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.util.UUID
 
@@ -92,6 +94,17 @@ class ChatRepository(
                 _channelState.value = ChannelState.ERROR
                 _errorMessage.value = "The other user hasn't logged in yet — they need to set up their keys first."
             }
+        } catch (e: PublicKeyMissingException) {
+            // User deleted their account and their public key is gone
+            withContext(Dispatchers.IO) {
+                chatDao.getUserById(otherUserId)?.let { user ->
+                    // Set status to "Deleted Account" so ChatScreen and HomeScreen UI updates
+                    chatDao.insertUser(user.copy(status = "Deleted Account"))
+                }
+            }
+            _channelState.value = ChannelState.ERROR
+            _errorMessage.value = "This user has deleted their account."
+            Log.w("ChatRepository", "User $otherUserId is a Deleted Account (missing public key).")
         } catch (e: Exception) {
             val err = ErrorHandler.classify(e)
             _channelState.value = ChannelState.ERROR
@@ -144,7 +157,7 @@ class ChatRepository(
             return
         }
 
-        // Encrypt and push to RTDB
+            // Encrypt and push to RTDB (Global Inbox Model)
         try {
             val result = KeyManager.encrypt(content, secret)
             val encMsg = EncryptedMessage(
@@ -156,8 +169,7 @@ class ChatRepository(
                 timestamp = timestamp,
                 ephemeralPublicKey = ephemeralKeyPair?.publicKeyBase64 // Attach our ephemeral public key
             )
-            val convId = getConversationId(currentUserId, receiverId)
-            rtdb.child("chats").child(convId).child(messageId).setValue(encMsg)
+            rtdb.child("user_inboxes").child(receiverId).child(messageId).setValue(encMsg).await()
         } catch (e: Exception) {
             // Guardrail 5: RTDB / crypto error
             val err = ErrorHandler.classify(e)
@@ -166,45 +178,44 @@ class ChatRepository(
         }
     }
 
-    // ── RTDB Listener ────────────────────────────────────────────
+    // ── RTDB Listener (Global Inbox) ─────────────────────────────
 
-    fun listenForMessages(otherUserId: String) {
-        val convId = getConversationId(currentUserId, otherUserId)
-        if (listeningConvId == convId) return
-
-        stopListening()
-        listeningConvId = convId
+    fun startGlobalListener() {
+        if (messageListener != null) return // Already listening
 
         messageListener = object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 val encMsg = snapshot.getValue(EncryptedMessage::class.java) ?: return
+                // We shouldn't receive our own messages in our inbox, but just in case:
                 if (encMsg.senderId == currentUserId) return
 
                 val ctx = context ?: return
 
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
-                        // RE-DERIVE OR FETCH SECRET using Their Ephemeral Public Key
+                        // 1. RE-DERIVE SECRET using Their Ephemeral Public Key
+                        // Since this is a global inbox, we don't know who the sender is until the message arrives.
+                        // We must derive the secret on the fly for EVERY incoming message based on its senderId.
                         val secret = if (encMsg.ephemeralPublicKey != null) {
                             KeyManager.getOrDeriveSharedSecret(
                                 context = ctx,
                                 myUserId = currentUserId,
-                                otherUserId = otherUserId,
+                                otherUserId = encMsg.senderId, // Derive based on whoever sent this
                                 isSender = false,
                                 ephemeralPublicKeyBase64 = encMsg.ephemeralPublicKey
                             )
-                        } else sharedSecret ?: run {
-                            _errorMessage.value = "Received message but missing ephemeral key and channel not ready."
+                        } else null 
+                        
+                        // Fallback if we already derived the secret for an active chat session
+                        val finalSecret = secret ?: sharedSecret
+
+                        if (finalSecret == null) {
+                            Log.e("ChatRepository", "Could not derive shared secret for incoming message from ${encMsg.senderId}. Message dropped.")
                             return@launch
                         }
 
-                        if (secret == null) {
-                            _errorMessage.value = "Could not derive shared secret for incoming message."
-                            return@launch
-                        }
-
-                        // Decrypt it
-                        val plaintext = KeyManager.decrypt(encMsg.ciphertext, encMsg.iv, secret)
+                        // 2. Decrypt it
+                        val plaintext = KeyManager.decrypt(encMsg.ciphertext, encMsg.iv, finalSecret)
                         
                         val entity = MessageEntity(
                             messageId = encMsg.messageId,
@@ -215,21 +226,40 @@ class ChatRepository(
                             isSentByMe = false
                         )
 
-                        // Save Locally
+                        // 3. Contact Sync: If sender is not in our local DB, fetch their profile and save them
+                        if (chatDao.getUserById(encMsg.senderId) == null) {
+                            try {
+                                val senderProfile = rtdb.child("users").child(encMsg.senderId).get().await()
+                                val senderName = senderProfile.child("name").getValue(String::class.java) ?: encMsg.senderId
+                                val senderStatus = senderProfile.child("status").getValue(String::class.java) ?: "Available"
+                                
+                                chatDao.insertUser(
+                                    com.example.chatapp.data.local.UserEntity(
+                                        userId = encMsg.senderId,
+                                        name = senderName,
+                                        status = senderStatus,
+                                        profilePhotoUrl = senderProfile.child("profilePhotoUrl").getValue(String::class.java)
+                                    )
+                                )
+                                Log.d("ChatRepository", "Auto-saved new contact: $senderName")
+                            } catch (e: Exception) {
+                                Log.w("ChatRepository", "Failed to fetch new contact profile", e)
+                            }
+                        }
+
+                        // 4. Save Locally (SQLite handles ordering and grouping by conversation ID)
                         chatDao.insertMessage(entity)
 
                     } catch (e: Exception) {
-                        // Guardrail 6: decryption failure
+                        // Guardrail 6: decryption failure (e.g., they encrypted with an old public key)
                         val err = ErrorHandler.classify(e)
-                        _errorMessage.value = "Message decryption failed: ${ErrorHandler.userMessage(err)}"
-                        Log.e("ChatRepository", "Decryption/Persist error", e)
+                        Log.e("ChatRepository", "Decryption/Persist error from ${encMsg.senderId}: ${ErrorHandler.userMessage(err)}", e)
                     } finally {
                         // ── EPHEMERAL STORAGE (PULL & DELETE) ──
-                        // Delete instantly even if decryption fails (e.g. sender used an old Identity Key)
-                        // to prevent an infinite crash loop on this listener.
+                        // Delete instantly even if decryption fails, preventing infinite crash loops.
                         snapshot.ref.removeValue()
-                            .addOnSuccessListener { Log.d("ChatRepository", "Message ${encMsg.messageId} popped from server.") }
-                            .addOnFailureListener { e -> Log.e("ChatRepository", "Failed to delete message", e) }
+                            .addOnSuccessListener { Log.d("ChatRepository", "Inbox msg ${encMsg.messageId} popped from server.") }
+                            .addOnFailureListener { e -> Log.e("ChatRepository", "Failed to delete inbox message", e) }
                     }
                 }
             }
@@ -239,39 +269,31 @@ class ChatRepository(
             override fun onChildMoved(s: DataSnapshot, p: String?) {}
 
             override fun onCancelled(error: DatabaseError) {
-                // Guardrail 7: RTDB permission / network errors
                 val msg = when (error.code) {
-                    DatabaseError.PERMISSION_DENIED ->
-                        "⛔ Database permission denied. Check Firebase security rules."
-                    DatabaseError.NETWORK_ERROR ->
-                        "📡 Network error — messages will resume when reconnected."
-                    DatabaseError.DISCONNECTED ->
-                        "🔌 Disconnected from server. Reconnecting…"
-                    DatabaseError.EXPIRED_TOKEN ->
-                        "🔑 Auth token expired. Please log in again."
-                    else -> "Database error (${error.code}): ${error.message}"
+                    DatabaseError.PERMISSION_DENIED -> "⛔ Database permission denied."
+                    DatabaseError.NETWORK_ERROR -> "📡 Network error — messages will resume when reconnected."
+                    DatabaseError.DISCONNECTED -> "🔌 Disconnected from server. Reconnecting…"
+                    DatabaseError.EXPIRED_TOKEN -> "🔑 Auth token expired. Please log in again."
+                    else -> "Database error (${error.code})"
                 }
                 _errorMessage.value = msg
-                Log.e("ChatRepository", "RTDB listener cancelled: ${error.message}")
+                Log.e("ChatRepository", "Global Inbox listener cancelled: ${error.message}")
             }
         }
 
-        rtdb.child("chats").child(convId).addChildEventListener(messageListener!!)
+        rtdb.child("user_inboxes").child(currentUserId).addChildEventListener(messageListener!!)
+        Log.d("ChatRepository", "Global inbox listener started for $currentUserId")
     }
 
     fun stopListening() {
-        val convId = listeningConvId ?: return
         messageListener?.let {
-            rtdb.child("chats").child(convId).removeEventListener(it)
+            rtdb.child("user_inboxes").child(currentUserId).removeEventListener(it)
         }
         messageListener = null
-        listeningConvId = null
+        Log.d("ChatRepository", "Global inbox listener stopped")
     }
 
     fun clearError() { _errorMessage.value = null }
-
-    private fun getConversationId(id1: String, id2: String) =
-        listOf(id1, id2).sorted().joinToString("_")
 }
 
 // Extension functions

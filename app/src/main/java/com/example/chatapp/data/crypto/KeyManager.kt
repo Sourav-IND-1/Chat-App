@@ -20,6 +20,8 @@ import javax.crypto.spec.SecretKeySpec
 import java.security.MessageDigest
 import java.security.SecureRandom
 
+class PublicKeyMissingException : Exception("Public key missing for user")
+
 /**
  * Manages the two-tier key architecture:
  * Tier 1: EC identity key pair (per user, created at login)
@@ -157,7 +159,7 @@ object KeyManager {
                 .getReference("users/$otherUserId/publicKey")
                 .get()
                 .await()
-            otherPublicBase64 = snapshot.getValue(String::class.java) ?: return null
+            otherPublicBase64 = snapshot.getValue(String::class.java) ?: throw PublicKeyMissingException()
         } else {
             // Receiver: Use static identity private key + Sender's ephemeral public key
             myPrivate = getPrivateKey(myUserId)

@@ -80,9 +80,6 @@ class ChatViewModel(
 
         viewModelScope.launch {
             chatRepository.establishChannel(otherUserId)
-            if (chatRepository.channelState.value == ChannelState.READY) {
-                chatRepository.listenForMessages(otherUserId)
-            }
         }
     }
 
@@ -96,7 +93,7 @@ class ChatViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        chatRepository.stopListening()
+        // No longer need to stop listener here, as the global inbox listener is tied to AppNavHost
     }
 }
 
@@ -136,14 +133,23 @@ fun ChatScreen(
     var messageText by remember { mutableStateOf("") }
 
     // Show repo errors as snackbars
-    LaunchedEffect(errorMessage) {
-        errorMessage?.let { msg ->
-            snackbarHostState.showSnackbar(
-                message = msg,
-                actionLabel = "Dismiss",
-                duration = SnackbarDuration.Long
-            )
-            viewModel.clearError()
+    LaunchedEffect(errorMessage, channelState) {
+        if (errorMessage != null) {
+            // Suppress the snackbar popup specifically if it's just the "deleted account" warning, 
+            // since we already display a prominent inline banner at the top for deleted accounts.
+            if (userName.endsWith(" [DELETED]") && errorMessage == "This user has deleted their account.") {
+                viewModel.clearError()
+                return@LaunchedEffect
+            }
+            
+            errorMessage?.let { msg ->
+                snackbarHostState.showSnackbar(
+                    message = msg,
+                    actionLabel = "Dismiss",
+                    duration = SnackbarDuration.Long
+                )
+                viewModel.clearError()
+            }
         }
     }
 
@@ -211,8 +217,22 @@ fun ChatScreen(
                 }
             }
             // Channel state banner
-            when (channelState) {
-                ChannelState.PENDING -> {
+            when {
+                userName.endsWith(" [DELETED]") -> {
+                    Surface(
+                        color = Color(0xFFEEEEEE),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            "This account has been deleted. You cannot send further messages.",
+                            modifier = Modifier.padding(12.dp),
+                            fontSize = 13.sp,
+                            color = Color.DarkGray,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+                channelState == ChannelState.PENDING -> {
                     Surface(
                         color = Color(0xFFFFF3E0),
                         modifier = Modifier.fillMaxWidth()
@@ -236,7 +256,7 @@ fun ChatScreen(
                         }
                     }
                 }
-                ChannelState.ERROR -> {
+                channelState == ChannelState.ERROR -> {
                     Surface(
                         color = Color(0xFFFFEBEE),
                         modifier = Modifier.fillMaxWidth()
@@ -250,7 +270,7 @@ fun ChatScreen(
                         )
                     }
                 }
-                ChannelState.READY -> {
+                channelState == ChannelState.READY -> {
                     // No banner needed — status shown in toolbar subtitle
                 }
             }
@@ -295,7 +315,7 @@ fun ChatScreen(
                             unfocusedIndicatorColor = Color.Transparent
                         ),
                         maxLines = 4,
-                        enabled = channelState == ChannelState.READY
+                        enabled = channelState == ChannelState.READY && !userName.endsWith(" [DELETED]")
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     FloatingActionButton(
@@ -306,11 +326,11 @@ fun ChatScreen(
                             }
                         },
                         modifier = Modifier.size(48.dp),
-                        containerColor = if (channelState == ChannelState.READY) AppBlue else Color.Gray,
+                        containerColor = if (channelState == ChannelState.READY && !userName.endsWith(" [DELETED]")) AppBlue else Color.Gray,
                         shape = CircleShape
                     ) {
                         Icon(
-                            if (channelState == ChannelState.READY)
+                            if (channelState == ChannelState.READY && !userName.endsWith(" [DELETED]"))
                                 Icons.AutoMirrored.Filled.Send
                             else
                                 Icons.Default.Lock,

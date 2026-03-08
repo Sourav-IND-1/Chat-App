@@ -24,6 +24,8 @@ fun AppNavHost(
     val context = LocalContext.current
     val isLoggedIn = appViewModel.isLoggedIn.collectAsState().value
 
+
+
     androidx.compose.runtime.LaunchedEffect(Unit) {
         appViewModel.checkStartupState(context)
     }

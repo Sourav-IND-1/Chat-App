@@ -1,0 +1,1002 @@
+--------- beginning of main
+03-09 01:58:47.405  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.425  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:47.425  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.445  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:47.445  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.464  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:47.465  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.485  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:47.485  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.501   917  4395 W AudioALSACaptureDataProviderNormal: readThread, latency_in_s,0.000005,0.019717,0.003038, totalTime 0.022760 > logTimeout 0.022000 TIMEOUT!!
+03-09 01:58:47.505  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:47.505  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.527  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:47.527  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.544  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:47.544  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.564  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:47.564  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.571  1388  1388 D AALLightSensor: oldLux=59 [SA:59 LA:56] newLux=59 (oriLux: 60)
+03-09 01:58:47.585  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:47.586  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.605  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:47.606  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.625  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:47.625  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.646  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:47.646  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.666  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:47.666  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.685  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:47.685  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.705  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:47.705  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.726  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:47.726  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.746  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:47.746  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.765  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:47.765  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.784  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:47.784  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.806  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:47.806  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.826  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:47.826  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.844  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:47.845  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.866  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:47.866  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.886  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:47.886  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.904  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:47.905  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.925  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:47.925  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.946  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:47.946  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.966  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:47.966  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:47.984  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:47.985  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.005  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:48.005  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.009  1047  1047 I BufferQueueProducer: [com.whatsapp/com.whatsapp.Conversation#2302](this:0xb400007abfb838f8,id:-1,api:0,p:-1,c:1047) queueBuffer: fps=1.98 dur=1008.04 max=509.94 min=498.10
+03-09 01:58:48.018  2568  2860 D CommonScenarios-113-10251: transportLayerQosChange TransportLayerData{link_index=34, uid=10251, uplink_srtt=48, uplink_packets=1, uplink_retrans_packets=0, uplink_retrans_rate=0, downlink_srtt=52, downlink_packets=1, downlink_retrans_packets=0, downlink_retrans_rate=0, downlink_rate=0, uplink_udp_packets=0, downlink_udp_packets=0, uplink_tcp_rate=52, uplink_udp_rate=0, downlink_tcp_rate=52, downlink_udp_rate=0}
+03-09 01:58:48.018  2568  2860 D CommonScenarios-113-10251: ActiveState process message 2
+03-09 01:58:48.018  2568  2860 D CommonScenarios-113-10251: ActiveState EVENT_NETWORK_KPI_CHANGE
+03-09 01:58:48.018  2568  2860 D CommonScenarios-113-10251: scenarios low package
+03-09 01:58:48.018  2568  2860 D CommonScenarios-113-10251: ActiveState EVENT_NETWORK_KPI_CHANGE score is invalid
+03-09 01:58:48.025  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.026  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.044  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:48.044  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.064  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.065  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.084  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.085  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.106  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.106  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.126  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.126  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.146  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:48.146  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.164  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.164  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.184  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.184  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.204  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.204  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.224  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.224  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.246  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.246  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.265  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.265  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.286  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:48.286  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.306  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.306  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.325  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:48.325  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.346  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.346  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.365  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.365  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.385  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:48.385  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.405  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:48.405  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.425  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.425  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.446  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:48.446  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.465  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.465  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.486  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.486  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.505  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.505  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.526  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.526  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.544  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:48.544  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.565  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.565  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.585  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.585  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.604  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.604  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.624  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.624  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.644  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:48.644  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.665  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.665  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.684  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.684  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.705  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.705  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.724  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:48.724  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.746  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.746  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.766  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:48.766  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.785  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.785  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.805  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.805  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.825  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.826  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.844  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.844  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.865  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.865  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.882  2633  2633 D AtCmdIndication: handleMessage what:1001
+03-09 01:58:48.883  2633  2633 D AtCmdParser: [PHONE0]< com.oplus.telephony.AtCmdParser$2@13f2fa4 urc ind:+ECSQ: 77,55,-387,1,1,-20,-407,32768,17,28,32767,32767,32767
+03-09 01:58:48.884  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.884  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.891  2544  2544 D OplusTelephonyController: onSignalStrengthChanged: SignalStrength=SignalStrength:{mCdma=CellSignalStrengthCdma: cdmaDbm=2147483647 cdmaEcio=2147483647 evdoDbm=2147483647 evdoEcio=2147483647 evdoSnr=2147483647 level=0,mGsm=CellSignalStrengthGsm: rssi=2147483647 ber=2147483647 mTa=2147483647 mLevel=0,mWcdma=CellSignalStrengthWcdma: ss=2147483647 ber=2147483647 rscp=2147483647 ecno=2147483647 level=0,mTdscdma=CellSignalStrengthTdscdma: rssi=2147483647 ber=2147483647 rscp=2147483647 level=0,mLte=CellSignalStrengthLte: rssi=2147483647 rsrp=2147483647 rsrq=2147483647 rssnr=2147483647 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 level=0 parametersUseForLevel=0,mNr=CellSignalStrengthNr:{ csiRsrp = 2147483647 csiRsrq = 2147483647 csiCqiTableIndex = 2147483647 csiCqiReport = [] ssRsrp = -102 ssRsrq = -5 ssSinr = 4 level = 1 parametersUseForLevel = 0 timingAdvance = 2147483647 },primary=CellSignalStrengthNr}
+03-09 01:58:48.904  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.904  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.925  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:48.925  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.938  1047  1047 I BufferQueueProducer: [StatusBar#80](this:0xb400007ad1b5b8f8,id:-1,api:0,p:-1,c:1047) queueBuffer: fps=0.38 dur=2645.21 max=2645.21 min=2645.21
+03-09 01:58:48.945  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.945  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.964  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.964  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:48.984  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:48.984  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.004  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:49.005  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.011  1047  1047 I BufferQueueProducer: [com.whatsapp/com.whatsapp.Conversation#2302](this:0xb400007abfb838f8,id:-1,api:0,p:-1,c:1047) queueBuffer: fps=2.00 dur=1002.38 max=504.18 min=498.21
+03-09 01:58:49.024  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:49.025  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.043  2568  2860 D CommonScenarios-113-10251: transportLayerQosChange TransportLayerData{link_index=34, uid=10251, uplink_srtt=0, uplink_packets=0, uplink_retrans_packets=0, uplink_retrans_rate=0, downlink_srtt=52, downlink_packets=0, downlink_retrans_packets=0, downlink_retrans_rate=0, downlink_rate=0, uplink_udp_packets=0, downlink_udp_packets=0, uplink_tcp_rate=0, uplink_udp_rate=0, downlink_tcp_rate=0, downlink_udp_rate=0}
+03-09 01:58:49.043  2568  2860 D CommonScenarios-113-10251: ActiveState process message 2
+03-09 01:58:49.044  2568  2860 D CommonScenarios-113-10251: ActiveState EVENT_NETWORK_KPI_CHANGE
+03-09 01:58:49.044  2568  2860 D CommonScenarios-113-10251: transport layer data is invalid
+03-09 01:58:49.044  2568  2860 D CommonScenarios-113-10251: ActiveState EVENT_NETWORK_KPI_CHANGE score is invalid
+03-09 01:58:49.045  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:49.045  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.064  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.064  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.085  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.085  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.106  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.106  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.126  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.126  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.144  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:49.144  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.166  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.166  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.186  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:49.186  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.205  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 2us return 0
+03-09 01:58:49.205  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.225  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:49.225  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.245  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.245  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.264  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.265  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.285  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.285  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.306  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:49.306  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.326  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:49.326  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.345  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:49.346  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.366  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.366  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.385  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:49.385  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.405  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:49.405  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.425  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.425  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.446  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.446  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.465  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.465  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.484  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:49.484  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.505  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.506  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.524  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.524  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.544  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.544  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.565  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.565  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.584  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.585  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.605  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.605  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.625  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.625  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.646  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:49.646  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.665  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.666  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.685  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:49.685  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.704  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.704  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.724  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.724  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.745  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:49.746  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.764  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:49.765  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.784  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:49.785  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.805  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:49.805  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.825  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.825  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.845  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:49.845  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.864  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:49.864  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.886  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.886  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.905  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.905  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.927  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:49.927  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.946  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.946  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.964  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:49.965  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:49.985  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:49.986  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.005  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:50.005  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.025  1047  1047 I BufferQueueProducer: [com.whatsapp/com.whatsapp.Conversation#2302](this:0xb400007abfb838f8,id:-1,api:0,p:-1,c:1047) queueBuffer: fps=1.97 dur=1013.70 max=515.17 min=498.53
+03-09 01:58:50.025  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.026  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.044  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.044  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.065  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.065  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.066  2568  2860 D CommonScenarios-113-10251: transportLayerQosChange TransportLayerData{link_index=34, uid=10251, uplink_srtt=0, uplink_packets=0, uplink_retrans_packets=0, uplink_retrans_rate=0, downlink_srtt=52, downlink_packets=0, downlink_retrans_packets=0, downlink_retrans_rate=0, downlink_rate=0, uplink_udp_packets=0, downlink_udp_packets=0, uplink_tcp_rate=0, uplink_udp_rate=0, downlink_tcp_rate=0, downlink_udp_rate=0}
+03-09 01:58:50.067  2568  2860 D CommonScenarios-113-10251: ActiveState process message 2
+03-09 01:58:50.067  2568  2860 D CommonScenarios-113-10251: ActiveState EVENT_NETWORK_KPI_CHANGE
+03-09 01:58:50.067  2568  2860 D CommonScenarios-113-10251: transport layer data is invalid
+03-09 01:58:50.067  2568  2860 D CommonScenarios-113-10251: ActiveState EVENT_NETWORK_KPI_CHANGE score is invalid
+03-09 01:58:50.086  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:50.086  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.104  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.104  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.107  3620  3774 I bt_shim_scanner: handle_remote_properties: handle_remote_properties Update device_type=0x3 addr_type=0x1
+03-09 01:58:50.124  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.125  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.144  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:50.144  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.165  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.165  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.185  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:50.185  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.199  3620  3774 I bt_shim_scanner: handle_remote_properties: handle_remote_properties Update device_type=0x3 addr_type=0x1
+03-09 01:58:50.205  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.205  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.214  1716  1716 D EnvelopeDetectorController: isEnvelopeAssistantEnabled isCancelNotification: true currentUserId: 0 userId: 0
+03-09 01:58:50.225  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:50.225  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.245  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:50.245  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.264  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.265  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.280   917  4395 W AudioALSACaptureDataProviderNormal: readThread, latency_in_s,0.000004,0.021473,0.000539, totalTime 0.022016 > logTimeout 0.022000 TIMEOUT!!
+03-09 01:58:50.287  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.287  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.302  1047  1047 I BufferQueueProducer: [StatusBar#80](this:0xb400007ad1b5b8f8,id:-1,api:0,p:-1,c:1047) queueBuffer: fps=0.73 dur=1363.98 max=1363.98 min=1363.98
+03-09 01:58:50.305  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.305  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.325  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:50.325  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.345  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.345  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.365  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.365  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.384  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:50.385  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.405  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.405  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.424  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.424  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.444 23487 23556 D CloudConfig_stgyHelper: mspVersionCanSupport mspKitVersion : 51922
+03-09 01:58:50.444  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.445  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.449 23487 23556 D CloudConfig_stgyHelper: getSupportKitMode strategyEntity : StrategyEntity(sdkInterval=1800000, strategyMode=1, minSDKVersion=1000, minKitVersion=2011900, validReqPeriod=7200000, maxReqProduct=100, forceKitIfKit=false, backoff=120, enable=true, defaultLimit=RateLimitConfig{maxCalls=1, timeWindowSeconds=1800, callIntervalSeconds=0}, productLimits={})
+03-09 01:58:50.449 23487 23556 D CloudConfig_stgyHelper: getSupportKitMode localSdkVersion : 1221
+03-09 01:58:50.456 23487 23557 D CloudConfig_stgyHelper: mspVersionCanSupport mspKitVersion : 51922
+03-09 01:58:50.462 23487 23557 D CloudConfig_stgyHelper: getSupportKitMode strategyEntity : StrategyEntity(sdkInterval=1800000, strategyMode=1, minSDKVersion=1000, minKitVersion=2011900, validReqPeriod=7200000, maxReqProduct=100, forceKitIfKit=false, backoff=120, enable=true, defaultLimit=RateLimitConfig{maxCalls=1, timeWindowSeconds=1800, callIntervalSeconds=0}, productLimits={})
+03-09 01:58:50.462 23487 23557 D CloudConfig_stgyHelper: getSupportKitMode localSdkVersion : 1221
+03-09 01:58:50.466  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:50.466  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.486  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:50.486  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.501  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.501  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.519 23487 23561 D CloudConfig_stgyHelper: mspVersionCanSupport mspKitVersion : 51922
+03-09 01:58:50.525 23487 23561 D CloudConfig_stgyHelper: getSupportKitMode strategyEntity : StrategyEntity(sdkInterval=1800000, strategyMode=1, minSDKVersion=1000, minKitVersion=2011900, validReqPeriod=7200000, maxReqProduct=100, forceKitIfKit=false, backoff=120, enable=true, defaultLimit=RateLimitConfig{maxCalls=1, timeWindowSeconds=1800, callIntervalSeconds=0}, productLimits={})
+03-09 01:58:50.525 23487 23561 D CloudConfig_stgyHelper: getSupportKitMode localSdkVersion : 1221
+03-09 01:58:50.525  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:50.525  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.545  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.545  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.565  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.565  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.584  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:50.585  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.604  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.605  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.624  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:50.625  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.645  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:50.645  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.665  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:50.665  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.685  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.685  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.704  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.705  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.725  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:50.725  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.745  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:50.745  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.765  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.765  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.784  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.784  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.803  2633  2633 D AtCmdIndication: handleMessage what:1001
+03-09 01:58:50.803  2633  2633 D AtCmdParser: [PHONE0]< com.oplus.telephony.AtCmdParser$2@13f2fa4 urc ind:+ECSQ: 70,55,-373,1,1,-34,-407,32768,17,28,32767,32767,32767
+03-09 01:58:50.806  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.806  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.811  2544  2544 D OplusTelephonyController: onSignalStrengthChanged: SignalStrength=SignalStrength:{mCdma=CellSignalStrengthCdma: cdmaDbm=2147483647 cdmaEcio=2147483647 evdoDbm=2147483647 evdoEcio=2147483647 evdoSnr=2147483647 level=0,mGsm=CellSignalStrengthGsm: rssi=2147483647 ber=2147483647 mTa=2147483647 mLevel=0,mWcdma=CellSignalStrengthWcdma: ss=2147483647 ber=2147483647 rscp=2147483647 ecno=2147483647 level=0,mTdscdma=CellSignalStrengthTdscdma: rssi=2147483647 ber=2147483647 rscp=2147483647 level=0,mLte=CellSignalStrengthLte: rssi=2147483647 rsrp=2147483647 rsrq=2147483647 rssnr=2147483647 cqiTableIndex=2147483647 cqi=2147483647 ta=2147483647 level=0 parametersUseForLevel=0,mNr=CellSignalStrengthNr:{ csiRsrp = 2147483647 csiRsrq = 2147483647 csiCqiTableIndex = 2147483647 csiCqiReport = [] ssRsrp = -102 ssRsrq = -9 ssSinr = 4 level = 1 parametersUseForLevel = 0 timingAdvance = 2147483647 },primary=CellSignalStrengthNr}
+03-09 01:58:50.826  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.826  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.845  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.845  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.867  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:50.867  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.886  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.886  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.905  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.905  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.924  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:50.925  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.945  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:50.945  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.965  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:50.965  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:50.985  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:50.985  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.006  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:51.006  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.024  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.025  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.044  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.044  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.065  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.065  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.084  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:51.084  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.091  2568  2860 D CommonScenarios-113-10251: transportLayerQosChange TransportLayerData{link_index=34, uid=10251, uplink_srtt=0, uplink_packets=0, uplink_retrans_packets=0, uplink_retrans_rate=0, downlink_srtt=52, downlink_packets=0, downlink_retrans_packets=0, downlink_retrans_rate=0, downlink_rate=0, uplink_udp_packets=0, downlink_udp_packets=0, uplink_tcp_rate=0, uplink_udp_rate=0, downlink_tcp_rate=0, downlink_udp_rate=0}
+03-09 01:58:51.091  2568  2860 D CommonScenarios-113-10251: ActiveState process message 2
+03-09 01:58:51.091  2568  2860 D CommonScenarios-113-10251: ActiveState EVENT_NETWORK_KPI_CHANGE
+03-09 01:58:51.091  2568  2860 D CommonScenarios-113-10251: transport layer data is invalid
+03-09 01:58:51.091  2568  2860 D CommonScenarios-113-10251: ActiveState EVENT_NETWORK_KPI_CHANGE score is invalid
+03-09 01:58:51.105  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.106  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.125  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:51.125  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.145  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.145  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.166  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.166  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.185  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.186  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.205  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.205  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.226  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:51.226  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.245  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:51.245  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.266  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.266  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.285  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:51.285  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.306  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.306  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.325  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.326  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.346  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:51.346  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.366  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:51.366  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.385  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.385  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.405  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.405  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.424  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:51.424  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.445  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.445  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.465  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.465  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.485  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.485  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.490   963  1016 D vendor.oplus.hardware.charger-V3-service: read content:,363,-2740,3960,3949,-463,500,2800,39,39,1,4,440,4918,39,1,0,1,1,0,0,4435,0,0,0,0,0,0,0,-2740,0,1,1,0,0
+03-09 01:58:51.490   963  1016 D vendor.oplus.hardware.charger-V3-service: , ret_value:104
+03-09 01:58:51.490   963  1016 D vendor.oplus.hardware.charger-V3-service: gmtime: 2026-03-09-01-58-51
+03-09 01:58:51.504  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.504  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.517  1047  1047 I BufferQueueProducer: [com.whatsapp/com.whatsapp.Conversation#2302](this:0xb400007abfb838f8,id:-1,api:0,p:-1,c:1047) queueBuffer: fps=2.01 dur=1491.68 max=504.29 min=493.23
+03-09 01:58:51.526  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.526  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.544  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.544  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.564  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.564  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.585  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:51.585  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.591  1388  1388 D AALLightSensor: oldLux=59 [SA:59 LA:56] newLux=59 (oriLux: 60)
+03-09 01:58:51.606  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.606  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.625  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:51.625  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.645  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.645  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.666  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:51.666  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.686  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:51.686  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.705  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.705  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.725  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.725  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.745  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:51.745  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.766  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.766  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.786  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:51.786  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.805  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.805  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.826  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.826  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.846  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.846  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.864  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:51.864  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.885  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:51.885  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.906  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:51.906  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.925  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.925  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.946  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.946  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.964  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:51.965  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:51.986  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:51.986  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.005  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.005  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.024  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.025  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.044  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.044  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.064  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.064  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.084  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.085  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.105  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.105  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.114  2568  2860 D CommonScenarios-113-10251: transportLayerQosChange TransportLayerData{link_index=34, uid=10251, uplink_srtt=0, uplink_packets=0, uplink_retrans_packets=0, uplink_retrans_rate=0, downlink_srtt=52, downlink_packets=0, downlink_retrans_packets=0, downlink_retrans_rate=0, downlink_rate=0, uplink_udp_packets=0, downlink_udp_packets=0, uplink_tcp_rate=0, uplink_udp_rate=0, downlink_tcp_rate=0, downlink_udp_rate=0}
+03-09 01:58:52.115  2568  2860 D CommonScenarios-113-10251: ActiveState process message 2
+03-09 01:58:52.115  2568  2860 D CommonScenarios-113-10251: ActiveState EVENT_NETWORK_KPI_CHANGE
+03-09 01:58:52.115  2568  2860 D CommonScenarios-113-10251: transport layer data is invalid
+03-09 01:58:52.115  2568  2860 D CommonScenarios-113-10251: ActiveState EVENT_NETWORK_KPI_CHANGE score is invalid
+03-09 01:58:52.124  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:52.124  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.145  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.145  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.165  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:52.165  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.184  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.184  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.205  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.205  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.226  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.226  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.244  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:52.244  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.266  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:52.266  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.285  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:52.285  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.306  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.306  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.325  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.325  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.345  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:52.345  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.364  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:52.365  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.385  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.385  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.406  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:52.406  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.426  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.426  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.445  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:52.445  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.465  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.465  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.485  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:52.485  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.505  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.505  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.525  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.525  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.528  1047  1047 I BufferQueueProducer: [com.whatsapp/com.whatsapp.Conversation#2302](this:0xb400007abfb838f8,id:-1,api:0,p:-1,c:1047) queueBuffer: fps=1.98 dur=1010.91 max=510.88 min=500.03
+03-09 01:58:52.545  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:52.545  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.564  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:52.564  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.565  1373  1373 I thermal_repeater: [recvMdThermalInfo] ret=24, strLen=127,  4, 43, -50, 0, 32767, 0
+03-09 01:58:52.584  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:52.585  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.600  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.600  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.620  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.620  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.642  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.642  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.662  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.662  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.684  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:52.684  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.704  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.704  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.725  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.725  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.746  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:52.746  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.764  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.765  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.785  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.785  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.805  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.805  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.825  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.825  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.845  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.845  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.865  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:52.865  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.886  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:52.886  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.906  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:52.906  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.924  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:52.924  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.946  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:52.946  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.966  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:52.966  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:52.986  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:52.986  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.004  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:53.005  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.025  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.025  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.045  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.045  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.065  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:53.065  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.070  1047  1047 I BufferQueueProducer: [StatusBar#80](this:0xb400007ad1b5b8f8,id:-1,api:0,p:-1,c:1047) queueBuffer: fps=0.72 dur=2767.84 max=2213.93 min=553.91
+03-09 01:58:53.085  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.085  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.105  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.105  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.125  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.125  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.139  2568  2860 D CommonScenarios-113-10251: transportLayerQosChange TransportLayerData{link_index=34, uid=10251, uplink_srtt=0, uplink_packets=0, uplink_retrans_packets=0, uplink_retrans_rate=0, downlink_srtt=52, downlink_packets=0, downlink_retrans_packets=0, downlink_retrans_rate=0, downlink_rate=0, uplink_udp_packets=0, downlink_udp_packets=0, uplink_tcp_rate=0, uplink_udp_rate=0, downlink_tcp_rate=0, downlink_udp_rate=0}
+03-09 01:58:53.139  2568  2860 D CommonScenarios-113-10251: ActiveState process message 2
+03-09 01:58:53.139  2568  2860 D CommonScenarios-113-10251: ActiveState EVENT_NETWORK_KPI_CHANGE
+03-09 01:58:53.139  2568  2860 D CommonScenarios-113-10251: transport layer data is invalid
+03-09 01:58:53.139  2568  2860 D CommonScenarios-113-10251: ActiveState EVENT_NETWORK_KPI_CHANGE score is invalid
+03-09 01:58:53.145  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.145  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.164  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.165  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.186  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.186  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.205  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:53.205  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.224  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.225  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.246  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:53.246  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.264  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.265  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.285  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.285  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.305  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.305  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.325  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.325  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.346  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:53.346  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.358  3620  3774 I bt_shim_scanner: handle_remote_properties: handle_remote_properties Update device_type=0x3 addr_type=0x1
+03-09 01:58:53.365  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.365  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.380  3620  3774 I bt_shim_scanner: handle_remote_properties: handle_remote_properties Update device_type=0x3 addr_type=0x1
+03-09 01:58:53.382  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.382  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.395  1716  1716 D EnvelopeDetectorController: isEnvelopeAssistantEnabled isCancelNotification: true currentUserId: 0 userId: 0
+03-09 01:58:53.405  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:53.405  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.425  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:53.425  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.444  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:53.445  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.465  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.465  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.484  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.485  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.505  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:53.505  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.526  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.526  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.546  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:53.546  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.565  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.565  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.584  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:53.585  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.605  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.605  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.625  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.625  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.645  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:53.645  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.665  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.665  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.684  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.685  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.704  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:53.705  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.724  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:53.724  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.743  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:53.743  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.765  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:53.765  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.784  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.785  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.804  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:53.805  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.825  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.825  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.858   917  4395 W AudioALSACaptureDataProviderNormal: readThread, latency_in_s,0.000004,0.039663,0.000210, totalTime 0.039877 > logTimeout 0.022000 TIMEOUT!!
+03-09 01:58:53.864  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.865  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.868  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:53.868  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.884  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.885  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.918   917  4395 W AudioALSACaptureDataProviderNormal: readThread, latency_in_s,0.000004,0.039734,0.000205, totalTime 0.039943 > logTimeout 0.022000 TIMEOUT!!
+03-09 01:58:53.925  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.926  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.929  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.929  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.944  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.944  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.965  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.965  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:53.986  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:53.986  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.005  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.005  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.026  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:54.026  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.027  1047  1047 I BufferQueueProducer: [com.whatsapp/com.whatsapp.Conversation#2302](this:0xb400007abfb838f8,id:-1,api:0,p:-1,c:1047) queueBuffer: fps=2.00 dur=1499.45 max=502.91 min=497.72
+03-09 01:58:54.046  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:54.046  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.065  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.065  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.085  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.085  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.104  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.104  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.125  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:54.125  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.146  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.146  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.163  2568  2860 D CommonScenarios-113-10251: transportLayerQosChange TransportLayerData{link_index=34, uid=10251, uplink_srtt=0, uplink_packets=0, uplink_retrans_packets=0, uplink_retrans_rate=0, downlink_srtt=52, downlink_packets=0, downlink_retrans_packets=0, downlink_retrans_rate=0, downlink_rate=0, uplink_udp_packets=0, downlink_udp_packets=0, uplink_tcp_rate=0, uplink_udp_rate=0, downlink_tcp_rate=0, downlink_udp_rate=0}
+03-09 01:58:54.163  2568  2860 D CommonScenarios-113-10251: ActiveState process message 2
+03-09 01:58:54.163  2568  2860 D CommonScenarios-113-10251: ActiveState EVENT_NETWORK_KPI_CHANGE
+03-09 01:58:54.163  2568  2860 D CommonScenarios-113-10251: transport layer data is invalid
+03-09 01:58:54.164  2568  2860 D CommonScenarios-113-10251: ActiveState EVENT_NETWORK_KPI_CHANGE score is invalid
+03-09 01:58:54.167  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:54.167  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.184  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.185  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.204  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.204  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.226  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:54.226  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.245  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.245  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.263  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:54.263  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.285  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.285  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.305  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.305  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.312  1047  1047 I BufferQueueProducer: [StatusBar#80](this:0xb400007ad1b5b8f8,id:-1,api:0,p:-1,c:1047) queueBuffer: fps=0.81 dur=1242.09 max=1242.09 min=1242.09
+03-09 01:58:54.326  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.326  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.344  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.345  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.364  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.364  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.384  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.385  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.405  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.405  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.425  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:54.425  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.445  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.445  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.466  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:54.466  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.485  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.485  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.504  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.504  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.525  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:54.525  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.545  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.545  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.564  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:54.565  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.585  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.585  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.604  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.604  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.624  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.624  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.645  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.646  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.664  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.665  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.685  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:54.685  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.705  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.705  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.726  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:54.726  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.745  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.745  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.766  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.766  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.785  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.785  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.805  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.805  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.826  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.826  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.844  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.845  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.866  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.866  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.885  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.885  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.905  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.905  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.925  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.926  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.945  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.945  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.965  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.965  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:54.985  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:54.985  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.005  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.006  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.022   917  4395 W AudioALSACaptureDataProviderNormal: readThread, latency_in_s,0.000005,0.023065,0.000230, totalTime 0.023299 > logTimeout 0.022000 TIMEOUT!!
+03-09 01:58:55.029  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.029  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.030  1047  1047 I BufferQueueProducer: [com.whatsapp/com.whatsapp.Conversation#2302](this:0xb400007abfb838f8,id:-1,api:0,p:-1,c:1047) queueBuffer: fps=1.99 dur=1002.77 max=501.61 min=501.16
+03-09 01:58:55.046  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:55.046  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.065  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:55.065  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.085  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.085  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.105  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.105  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.126  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.126  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.144  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.145  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.165  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.165  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.186  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:55.186  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.187  2568  2860 D CommonScenarios-113-10251: transportLayerQosChange TransportLayerData{link_index=34, uid=10251, uplink_srtt=0, uplink_packets=0, uplink_retrans_packets=0, uplink_retrans_rate=0, downlink_srtt=52, downlink_packets=0, downlink_retrans_packets=0, downlink_retrans_rate=0, downlink_rate=0, uplink_udp_packets=0, downlink_udp_packets=0, uplink_tcp_rate=0, uplink_udp_rate=0, downlink_tcp_rate=0, downlink_udp_rate=0}
+03-09 01:58:55.187  2568  2860 D CommonScenarios-113-10251: ActiveState process message 2
+03-09 01:58:55.187  2568  2860 D CommonScenarios-113-10251: ActiveState EVENT_NETWORK_KPI_CHANGE
+03-09 01:58:55.187  2568  2860 D CommonScenarios-113-10251: transport layer data is invalid
+03-09 01:58:55.187  2568  2860 D CommonScenarios-113-10251: ActiveState EVENT_NETWORK_KPI_CHANGE score is invalid
+03-09 01:58:55.206  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:55.206  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.226  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.226  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.245  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.246  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.266  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.266  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.286  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.286  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.305  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.305  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.326  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.326  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.346  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.346  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.366  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.366  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.385  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.386  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.406  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.406  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.425  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.425  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.445  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:55.445  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.450   940   958 D power@timer: [mtkPowerTimer] visRead:0
+03-09 01:58:55.466  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.466  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.485  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.485  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.506  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.506  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.527  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:55.527  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.545  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:55.546  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.565  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:55.566  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.585  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.585  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.604  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.605  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.625  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.625  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.646  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.646  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.666  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.666  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.672  1388  1388 D AALLightSensor: oldLux=59 [SA:59 LA:56] newLux=59 (oriLux: 60)
+03-09 01:58:55.685  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:55.685  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.695 28332 31334 D ShellSubscriberWorkerThread: the first 8 bytes empty, and RestData length > 8 
+03-09 01:58:55.704  1716  2191 D OplusSlaParams: getGameHighTemperatureUpThreshold = 430
+03-09 01:58:55.704  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.704  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.704  1716  2191 D OplusSlaParams: getGameHighTemperatureUpThreshold = 430
+03-09 01:58:55.724  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.725  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.745  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:55.745  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.765  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:55.765  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.784  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.785  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.806  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:55.806  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.824  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:55.825  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.845  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.845  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.864  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.865  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.886  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:55.886  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.904  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.904  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.922   917  4395 W AudioALSACaptureDataProviderNormal: readThread, latency_in_s,0.000003,0.019927,0.003661, totalTime 0.023592 > logTimeout 0.022000 TIMEOUT!!
+03-09 01:58:55.925  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.925  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.944  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.945  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.966  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:55.966  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:55.985  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:55.985  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:56.004  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:56.005  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:56.025  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:56.026  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:56.034  1047  1047 I BufferQueueProducer: [com.whatsapp/com.whatsapp.Conversation#2302](this:0xb400007abfb838f8,id:-1,api:0,p:-1,c:1047) queueBuffer: fps=1.99 dur=1004.22 max=502.46 min=501.75
+03-09 01:58:56.044  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:56.045  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:56.065  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:56.065  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:56.085  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:56.086  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:56.101  1047  1047 I BufferQueueProducer: [StatusBar#80](this:0xb400007ad1b5b8f8,id:-1,api:0,p:-1,c:1047) queueBuffer: fps=0.56 dur=1788.79 max=1788.79 min=1788.79
+03-09 01:58:56.105  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:56.105  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:56.125  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:56.125  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:56.145  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:56.145  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:56.165  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:56.165  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:56.184  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:56.184  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:56.204  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:56.204  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:56.210  2568  2860 D CommonScenarios-113-10251: transportLayerQosChange TransportLayerData{link_index=34, uid=10251, uplink_srtt=0, uplink_packets=0, uplink_retrans_packets=0, uplink_retrans_rate=0, downlink_srtt=52, downlink_packets=0, downlink_retrans_packets=0, downlink_retrans_rate=0, downlink_rate=0, uplink_udp_packets=0, downlink_udp_packets=0, uplink_tcp_rate=0, uplink_udp_rate=0, downlink_tcp_rate=0, downlink_udp_rate=0}
+03-09 01:58:56.211  2568  2860 D CommonScenarios-113-10251: ActiveState process message 2
+03-09 01:58:56.211  2568  2860 D CommonScenarios-113-10251: ActiveState EVENT_NETWORK_KPI_CHANGE
+03-09 01:58:56.211  2568  2860 D CommonScenarios-113-10251: transport layer data is invalid
+03-09 01:58:56.211  2568  2860 D CommonScenarios-113-10251: ActiveState EVENT_NETWORK_KPI_CHANGE score is invalid
+03-09 01:58:56.225  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:56.225  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:56.244  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:56.244  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:56.266  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:56.266  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:56.284  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:56.285  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:56.299  2307  2307 D OplusPrivacyDotViewController: scheduleUpdate: 
+03-09 01:58:56.299  2307  2814 D OplusPrivacyDotViewController: processNextViewState: 
+03-09 01:58:56.300  2307  2814 D OplusPrivacyDotViewController: resolveState ViewState(systemPrivacyEventIsActive=false, shadeExpanded=false, qsExpanded=false, rtl=false, rotation=0, height=12, x=50, y=42, cornerIndex=1, designatedCorner=android.widget.FrameLayout{28f5dfe G.E...... ......ID 0,0-12,12 #7f0a051b app:id/icons_container viewInfo = }, contentDescription=null, chipAnimationStart=false, preDraw=false) shouldShowDot false
+03-09 01:58:56.305  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:56.305  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:56.324  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:56.325  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:56.334  1047  1047 I BufferQueueProducer: [NavigationBar_displayId_0#75](this:0xb400007ac04898f8,id:-1,api:0,p:-1,c:1047) queueBuffer: fps=0.02 dur=60017.22 max=60017.22 min=60017.22
+03-09 01:58:56.345  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:56.345  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:56.365  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 1us return 0
+03-09 01:58:56.365  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:56.384  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:56.384  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled
+03-09 01:58:56.404  4355  4390 V ListServiceUtils: getListValueByName module:control package:audioBoostEnable cost 0us return 0
+03-09 01:58:56.404  4355  4390 D AudioRecordExtImpl: checkBoostPermission, audioBoostEnable is disabled

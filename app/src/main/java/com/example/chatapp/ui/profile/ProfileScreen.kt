@@ -42,6 +42,7 @@ fun ProfileScreen(
     var isSaving by remember { mutableStateOf(false) }
     var isDeleting by remember { mutableStateOf(false) }
     var saved by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
     var isLoadingProfile by remember { mutableStateOf(true) }
 
     // Load profile from RTDB on first composition
@@ -128,10 +129,17 @@ fun ProfileScreen(
                         val id = uid ?: return@Button
                         isSaving = true
                         saved = false
+                        errorMessage = null
                         scope.launch {
-                            userRepo.updateUserProfile(id, editName.trim(), editStatus.trim())
-                            isSaving = false
-                            saved = true
+                            try {
+                                userRepo.updateUserProfile(id, editName.trim(), editStatus.trim())
+                                isSaving = false
+                                saved = true
+                            } catch (e: Exception) {
+                                isSaving = false
+                                saved = false
+                                errorMessage = e.message ?: "Failed to update profile."
+                            }
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -151,6 +159,11 @@ fun ProfileScreen(
                 if (saved) {
                     Spacer(Modifier.height(8.dp))
                     Text("Profile saved!", color = AppBlue, fontWeight = FontWeight.SemiBold)
+                }
+                
+                errorMessage?.let { error ->
+                    Spacer(Modifier.height(8.dp))
+                    Text(error, color = Color.Red, fontWeight = FontWeight.SemiBold)
                 }
 
                 Spacer(Modifier.height(32.dp))

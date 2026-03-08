@@ -89,11 +89,13 @@ class AuthRepository(
         password: String,
         name: String,
         context: Context
-    ): AuthResult<Unit> {
-        return try {
-            // 1. Create account via REST
+    ): AuthResult<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val lowercaseName = name.trim().lowercase()
+
+            // 1. Create account via REST to explicitly catch EMAIL_EXISTS
             val signUpBody = JSONObject().apply {
-                put("email", email)
+                put("email", email.trim())
                 put("password", password)
                 put("returnSecureToken", true)
             }
@@ -103,26 +105,42 @@ class AuthRepository(
                 val msg = signUpResp.getJSONObject("error").optString("message", "Registration failed")
                 if (msg.contains("EMAIL_EXISTS")) {
                     Log.d(TAG, "Intercepted EMAIL_EXISTS. Attempting ghost account recovery...")
-                    return handleGhostAccountRecovery(email, password, name, context)
+                    return@withContext handleGhostAccountRecovery(email, password, name, context)
                 }
-                return AuthResult.Error(friendlyAuthError(msg))
+                return@withContext AuthResult.Error(friendlyAuthError(msg))
             }
 
             val idToken = signUpResp.getString("idToken")
             val uid = signUpResp.getString("localId")
 
-            // 2. Set displayName via REST
+            // 2. Sign in via SDK immediately so we have `auth != null` for Security Rules
+            auth.signInWithEmailAndPassword(email.trim(), password).await()
+            val user = auth.currentUser ?: throw Exception("Failed to authenticate locally")
+
+            // 3. SECURE CLAIM: Check if username is taken now that we are authenticated
+            val usernameRef = rtdb.child("usernames").child(lowercaseName)
+            val snapshot = usernameRef.get().await()
+            
+            if (snapshot.exists() && snapshot.getValue(String::class.java) != uid) {
+                // Name is taken by someone else! Rollback the account creation.
+                Log.d(TAG, "Registration failed: Username '$lowercaseName' is already taken. Rolling back auth...")
+                user.delete().await()
+                auth.signOut()
+                return@withContext AuthResult.Error("Username already taken. Please choose another one.")
+            }
+
+            // 4. Claim the username
+            usernameRef.setValue(uid).await()
+
+            // 5. Update Profile
             val updateBody = JSONObject().apply {
                 put("idToken", idToken)
-                put("displayName", name)
+                put("displayName", name.trim())
                 put("returnSecureToken", false)
             }
             postJson(UPDATE_PROFILE_URL, updateBody)
 
-            // 3. Sign in via SDK to populate auth.currentUser
-            auth.signInWithEmailAndPassword(email, password).await()
-
-            // 4. Write profile to RTDB
+            // 7. Write profile to RTDB
             val profileData = mapOf(
                 "name" to name,
                 "status" to "Available",
@@ -130,11 +148,18 @@ class AuthRepository(
             )
             rtdb.child("users").child(uid).setValue(profileData).await()
 
-            // 5. Generate EC key pair + publish publicKey to RTDB
+            // 8. Generate EC key pair + publish publicKey to RTDB
             KeyManager.initIdentityKey(context, uid, name)
 
             AuthResult.Success(Unit)
         } catch (e: Exception) {
+            // Failsafe cleanup of claimed username if anything below REST creation crashes
+            try {
+                val lowercaseName = name.trim().lowercase()
+                rtdb.child("usernames").child(lowercaseName).removeValue()
+            } catch (cleanupEx: Exception) {
+                Log.w(TAG, "Failed to cleanup claimed username after registration error", cleanupEx)
+            }
             Log.e(TAG, "Registration failed", e)
             AuthResult.Error(e.message ?: "An unknown error occurred")
         }
@@ -157,7 +182,10 @@ class AuthRepository(
             val user = auth.currentUser ?: return AuthResult.Error("Failed to claim old account.")
             
             // 2. Obliterate the ghost account data and auth record
-            deleteCurrentAccount(context, user.uid)
+            // The ghost account likely corresponds to the current name they are trying to register,
+            // but we use the ghost's actual profile displayName if possible.
+            val ghostName = user.displayName ?: name
+            deleteCurrentAccount(context, user.uid, ghostName)
             
             // 3. Retry registration from scratch now that the email is freed
             return register(email, password, name, context)
@@ -207,33 +235,25 @@ class AuthRepository(
      * Completely destroys the account, removing all traces from Local DB, Keystore, 
      * RTDB chats, RTDB Profile, and Firebase Auth.
      */
-    suspend fun deleteCurrentAccount(context: Context, uid: String) {
+    suspend fun deleteCurrentAccount(context: Context, uid: String, knownName: String? = null) {
         try {
             val user = auth.currentUser ?: return
+            val displayName = knownName ?: user.displayName
             
-            // 1. Clear Local SQLite Database & Get Contacts to wipe RTDB Chats
-            val db = com.example.chatapp.data.local.AppDatabase.getDatabase(context)
-            val contacts = db.chatDao().getAllContactsSync()
-            db.clearAllTables()
+            // 1. Clear Local SQLite Database on IO Thread
+            withContext(Dispatchers.IO) {
+                val db = com.example.chatapp.data.local.AppDatabase.getDatabase(context)
+                db.clearAllTables()
+            }
 
-            // 2. Clear all RTDB Chat Nodes we are a participant in (Global Scan)
-            // This ensures we clean up unreceived messages even if our local SQLite contacts are empty (e.g. after a reinstall)
+            // 2. Clear our Global Inbox from RTDB
+            // Since we use an Inbox model, we just delete our own inbox. Any messages *we* sent
+            // to others are in *their* inboxes and will be decrypted/deleted when they pull them,
+            // or fail to decrypt (and get deleted anyway) if they pull them after we delete our keys.
             try {
-                val allChats = rtdb.child("chats").get().await()
-                if (allChats.exists()) {
-                    for (chatSnapshot in allChats.children) {
-                        val convId = chatSnapshot.key
-                        if (convId != null && convId.contains(uid)) {
-                            chatSnapshot.ref.removeValue().await()
-                        }
-                    }
-                }
+                rtdb.child("user_inboxes").child(uid).removeValue().await()
             } catch (e: Exception) {
-                Log.w(TAG, "Global chat scan failed (likely rules), falling back to local contacts", e)
-                for (contact in contacts) {
-                    val convId = listOf(uid, contact.userId).sorted().joinToString("_")
-                    rtdb.child("chats").child(convId).removeValue().await()
-                }
+                Log.w(TAG, "Failed to clear global inbox on deletion", e)
             }
 
             // 3. Delete RTDB Profile (Total destruction instead of soft delete)

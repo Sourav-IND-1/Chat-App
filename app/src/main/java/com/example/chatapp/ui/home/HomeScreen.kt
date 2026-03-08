@@ -187,7 +187,8 @@ fun HomeScreen(
                 padding = padding,
                 localContacts = contacts.map { it.userId }.toSet(),
                 onPersonClick = { user ->
-                    navController.navigate(Screen.Chat.createRoute(user.userId, user.name))
+                    val displayName = if (user.status == "Deleted Account") "${user.name} {DELETED}" else user.name
+                    navController.navigate(Screen.Chat.createRoute(user.userId, displayName))
                 }
             )
         }
@@ -311,6 +312,8 @@ fun ChatListItem(user: UserEntity, db: AppDatabase, currentUserId: String, onCli
     val latestMessage by db.chatDao()
         .getLatestMessageForUser(currentUserId, user.userId)
         .collectAsState(initial = null)
+        
+    val displayName = if (user.status == "Deleted Account") "${user.name} [DELETED]" else user.name
 
     Row(
         modifier = Modifier
@@ -319,7 +322,7 @@ fun ChatListItem(user: UserEntity, db: AppDatabase, currentUserId: String, onCli
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        UserAvatar(name = user.name, size = 50)
+        UserAvatar(name = displayName, size = 50)
         Spacer(modifier = Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
             Row(
@@ -328,10 +331,10 @@ fun ChatListItem(user: UserEntity, db: AppDatabase, currentUserId: String, onCli
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = user.name,
+                    text = displayName,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
-                    color = Color.Black
+                    color = if (user.status == "Deleted Account") Color.Gray else Color.Black
                 )
                 latestMessage?.let {
                     Text(
@@ -355,6 +358,8 @@ fun ChatListItem(user: UserEntity, db: AppDatabase, currentUserId: String, onCli
 
 @Composable
 fun PersonListItem(user: User, alreadyInContacts: Boolean, onClick: () -> Unit) {
+    val displayName = if (user.status == "Deleted Account") "${user.name} [DELETED]" else user.name
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -362,20 +367,20 @@ fun PersonListItem(user: User, alreadyInContacts: Boolean, onClick: () -> Unit) 
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        UserAvatar(name = user.name, size = 50)
+        UserAvatar(name = displayName, size = 50)
         Spacer(modifier = Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = user.name,
+                text = displayName,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
-                color = Color.Black
+                color = if (user.status == "Deleted Account") Color.Gray else Color.Black
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = user.status ?: "Available",
+                text = if (user.status == "Deleted Account") "Deleted Account" else user.status ?: "Available",
                 fontSize = 14.sp,
-                color = Color.Gray,
+                color = if (user.status == "Deleted Account") Color.Red.copy(alpha=0.6f) else Color.Gray,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

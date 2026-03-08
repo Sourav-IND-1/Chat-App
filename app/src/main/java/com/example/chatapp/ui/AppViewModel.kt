@@ -34,6 +34,12 @@ class AppViewModel : ViewModel() {
                     _isLoggedIn.value = false
                 } else {
                     _isLoggedIn.value = true
+                    
+                    // Start the Global Inbox Listener in the ViewModel scope
+                    // so it survives all navigation and UI recompositions.
+                    val db = com.example.chatapp.data.local.AppDatabase.getDatabase(context)
+                    val chatRepo = com.example.chatapp.data.repository.ChatRepository(db.chatDao(), user.uid, context)
+                    chatRepo.startGlobalListener()
                 }
             } else {
                 _isLoggedIn.value = false
