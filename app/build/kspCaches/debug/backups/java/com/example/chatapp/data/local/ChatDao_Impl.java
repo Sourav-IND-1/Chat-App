@@ -1,6 +1,7 @@
 package com.example.chatapp.data.local;
 
 import android.database.Cursor;
+import android.os.CancellationSignal;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.room.CoroutinesRoom;
@@ -12,6 +13,7 @@ import androidx.room.util.DBUtil;
 import androidx.sqlite.db.SupportSQLiteStatement;
 import java.lang.Class;
 import java.lang.Exception;
+import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
 import java.lang.SuppressWarnings;
@@ -20,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import javax.annotation.processing.Generated;
+import kotlin.coroutines.Continuation;
 import kotlinx.coroutines.flow.Flow;
 
 @Generated("androidx.room.RoomProcessor")
@@ -151,6 +154,52 @@ public final class ChatDao_Impl implements ChatDao {
         _statement.release();
       }
     });
+  }
+
+  @Override
+  public Object getAllContactsSync(final Continuation<List<UserEntity>> $completion) {
+    final String _sql = "SELECT * FROM users";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
+    final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();
+    return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable<List<UserEntity>>() {
+      @Override
+      @NonNull
+      public List<UserEntity> call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final int _cursorIndexOfUserId = CursorUtil.getColumnIndexOrThrow(_cursor, "userId");
+          final int _cursorIndexOfName = CursorUtil.getColumnIndexOrThrow(_cursor, "name");
+          final int _cursorIndexOfProfilePhotoUrl = CursorUtil.getColumnIndexOrThrow(_cursor, "profilePhotoUrl");
+          final int _cursorIndexOfStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "status");
+          final List<UserEntity> _result = new ArrayList<UserEntity>(_cursor.getCount());
+          while (_cursor.moveToNext()) {
+            final UserEntity _item;
+            final String _tmpUserId;
+            _tmpUserId = _cursor.getString(_cursorIndexOfUserId);
+            final String _tmpName;
+            _tmpName = _cursor.getString(_cursorIndexOfName);
+            final String _tmpProfilePhotoUrl;
+            if (_cursor.isNull(_cursorIndexOfProfilePhotoUrl)) {
+              _tmpProfilePhotoUrl = null;
+            } else {
+              _tmpProfilePhotoUrl = _cursor.getString(_cursorIndexOfProfilePhotoUrl);
+            }
+            final String _tmpStatus;
+            if (_cursor.isNull(_cursorIndexOfStatus)) {
+              _tmpStatus = null;
+            } else {
+              _tmpStatus = _cursor.getString(_cursorIndexOfStatus);
+            }
+            _item = new UserEntity(_tmpUserId,_tmpName,_tmpProfilePhotoUrl,_tmpStatus);
+            _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+          _statement.release();
+        }
+      }
+    }, $completion);
   }
 
   @Override

@@ -93,7 +93,7 @@ fun RegisterScreen(navController: NavController) {
                         when (result) {
                             is AuthResult.Success -> {
                                 navController.navigate(Screen.Home.route) {
-                                    popUpTo(Screen.Login.route) { inclusive = true }
+                                    popUpTo(0) { inclusive = true }
                                 }
                             }
                             is AuthResult.Error -> {
@@ -108,10 +108,6 @@ fun RegisterScreen(navController: NavController) {
             ) {
                 Text("Register")
             }
-        }
-
-        TextButton(onClick = { navController.popBackStack() }) {
-            Text("Back to Login")
         }
 
         message?.let {

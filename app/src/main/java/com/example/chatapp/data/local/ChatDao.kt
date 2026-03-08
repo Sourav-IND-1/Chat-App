@@ -14,6 +14,10 @@ interface ChatDao {
     @Query("SELECT * FROM users")
     fun getAllContacts(): Flow<List<UserEntity>>
 
+    @Query("SELECT * FROM users")
+    @JvmSuppressWildcards
+    suspend fun getAllContactsSync(): List<UserEntity>
+
     @Query("SELECT * FROM users WHERE userId = :userId LIMIT 1")
     fun getUserById(userId: String): UserEntity?
 

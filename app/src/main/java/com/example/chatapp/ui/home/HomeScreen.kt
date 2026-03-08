@@ -30,6 +30,7 @@ import com.example.chatapp.data.local.UserEntity
 import com.example.chatapp.data.repository.UserRepository
 import com.example.chatapp.domain.model.User
 import com.example.chatapp.ui.navigation.Screen
+import com.example.chatapp.ui.AppViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -119,11 +120,22 @@ fun HomeScreen(
                     },
                     colors = TopAppBarDefaults.topAppBarColors(containerColor = AppBlue),
                     actions = {
-                        IconButton(onClick = { navController.navigate(Screen.Search.route) }) {
+                        IconButton(onClick = {
+                            navController.navigate(Screen.Search.route)
+                        }) {
                             Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.White)
                         }
                         IconButton(onClick = { navController.navigate(Screen.Profile.route) }) {
                             Icon(Icons.Default.AccountCircle, contentDescription = "Profile", tint = Color.White)
+                        }
+                        TextButton(onClick = {
+                            val authViewModel = AppViewModel()
+                            authViewModel.logout(context)
+                            navController.navigate(Screen.Register.route) {
+                                popUpTo(0)
+                            }
+                        }) {
+                            Text("Logout", color = Color.White, fontWeight = FontWeight.Medium)
                         }
                     }
                 )

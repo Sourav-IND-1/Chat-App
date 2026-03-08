@@ -19,6 +19,8 @@ class UserRepository {
                 val uid = child.key ?: return@mapNotNull null
                 if (uid == excludeUserId) return@mapNotNull null
                 val name = child.child("name").getValue(String::class.java) ?: uid
+                if (name == "[Deleted Account]") return@mapNotNull null
+                
                 val status = child.child("status").getValue(String::class.java) ?: "Available"
                 User(userId = uid, name = name, status = status)
             }

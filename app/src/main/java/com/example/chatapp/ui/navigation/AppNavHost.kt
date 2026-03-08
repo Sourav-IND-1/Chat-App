@@ -1,6 +1,8 @@
 package com.example.chatapp.ui.navigation
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -8,7 +10,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.chatapp.ui.AppViewModel
-import com.example.chatapp.ui.auth.LoginScreen
 import com.example.chatapp.ui.auth.RegisterScreen
 import com.example.chatapp.ui.chat.ChatScreen
 import com.example.chatapp.ui.home.HomeScreen
@@ -21,16 +22,30 @@ fun AppNavHost(
     appViewModel: AppViewModel = viewModel()
 ) {
     val context = LocalContext.current
-    val startDestination = if (appViewModel.isUserLoggedIn(context)) {
+    val isLoggedIn = appViewModel.isLoggedIn.collectAsState().value
+
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        appViewModel.checkStartupState(context)
+    }
+
+    if (isLoggedIn == null) {
+        // Show a blank screen or a splash logo while checking the Keystore/Firebase
+        androidx.compose.foundation.layout.Box(
+            modifier = androidx.compose.ui.Modifier.fillMaxSize(),
+            contentAlignment = androidx.compose.ui.Alignment.Center
+        ) {
+            androidx.compose.material3.CircularProgressIndicator()
+        }
+        return
+    }
+
+    val startDestination = if (isLoggedIn) {
         Screen.Home.route
     } else {
-        Screen.Login.route
+        Screen.Register.route
     }
 
     NavHost(navController = navController, startDestination = startDestination) {
-        composable(Screen.Login.route) {
-            LoginScreen(navController)
-        }
         composable(Screen.Register.route) {
             RegisterScreen(navController)
         }

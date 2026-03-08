@@ -49,6 +49,7 @@ private val ChatBackground = Color(0xFFFAFAFA)
 class ChatViewModel(
     private val chatRepository: ChatRepository,
     private val otherUserId: String,
+    private val otherUserName: String,
     private val context: android.content.Context
 ) : ViewModel() {
 
@@ -62,6 +63,21 @@ class ChatViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), NetworkStatus.Available)
 
     init {
+        viewModelScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            val db = com.example.chatapp.data.local.AppDatabase.getDatabase(context)
+            val existing = db.chatDao().getUserById(otherUserId)
+            if (existing == null) {
+                db.chatDao().insertUser(
+                    com.example.chatapp.data.local.UserEntity(
+                        userId = otherUserId,
+                        name = otherUserName,
+                        profilePhotoUrl = null,
+                        status = "Available"
+                    )
+                )
+            }
+        }
+
         viewModelScope.launch {
             chatRepository.establishChannel(otherUserId)
             if (chatRepository.channelState.value == ChannelState.READY) {
@@ -91,25 +107,13 @@ class ChatViewModelFactory(
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val db = AppDatabase.getDatabase(context)
-        // Save contact to Room if not already there (so they appear in Chats tab)
-        val existing = db.chatDao().getUserById(otherUserId)
-        if (existing == null) {
-            db.chatDao().insertUser(
-                com.example.chatapp.data.local.UserEntity(
-                    userId = otherUserId,
-                    name = otherUserName,
-                    profilePhotoUrl = null,
-                    status = "Available"
-                )
-            )
-        }
         val repo = ChatRepository(
             chatDao = db.chatDao(),
             currentUserId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: "",
             context = context
         )
         @Suppress("UNCHECKED_CAST")
-        return ChatViewModel(repo, otherUserId, context) as T
+        return ChatViewModel(repo, otherUserId, otherUserName, context) as T
     }
 }
 

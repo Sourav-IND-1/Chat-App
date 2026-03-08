@@ -40,7 +40,11 @@ class ChatRepository(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage
 
+    // Using a map to cache ephemeral keys or derived secrets per conversation 
+    // simplifies handling across multiple threads, but we'll stick to a simple byte array 
+    // for this one-on-one session example.
     private var sharedSecret: ByteArray? = null
+    private var ephemeralKeyPair: KeyManager.EphemeralKeyPair? = null
 
     // ── Secure Channel ───────────────────────────────────────────
 
@@ -66,7 +70,20 @@ class ChatRepository(
         }
 
         try {
-            val secret = KeyManager.getOrDeriveSharedSecret(ctx, currentUserId, otherUserId)
+            // First time setting up? Generate our ephemeral key
+            if (ephemeralKeyPair == null) {
+                ephemeralKeyPair = KeyManager.generateEphemeralKeyPair()
+            }
+
+            // Derive shared secret using OUR ephemeral private key + THEIR static public key
+            val secret = KeyManager.getOrDeriveSharedSecret(
+                context = ctx,
+                myUserId = currentUserId,
+                otherUserId = otherUserId,
+                isSender = true,
+                ephemeralPrivateKey = ephemeralKeyPair?.privateKey
+            )
+
             if (secret != null) {
                 sharedSecret = secret
                 _channelState.value = ChannelState.READY
@@ -136,7 +153,8 @@ class ChatRepository(
                 receiverId = receiverId,
                 ciphertext = result.ciphertext,
                 iv = result.iv,
-                timestamp = timestamp
+                timestamp = timestamp,
+                ephemeralPublicKey = ephemeralKeyPair?.publicKeyBase64 // Attach our ephemeral public key
             )
             val convId = getConversationId(currentUserId, receiverId)
             rtdb.child("chats").child(convId).child(messageId).setValue(encMsg)
@@ -162,32 +180,57 @@ class ChatRepository(
                 val encMsg = snapshot.getValue(EncryptedMessage::class.java) ?: return
                 if (encMsg.senderId == currentUserId) return
 
-                val secret = sharedSecret ?: run {
-                    _errorMessage.value = "Received a message but secure channel is not ready."
-                    return
-                }
-                try {
-                    val plaintext = KeyManager.decrypt(encMsg.ciphertext, encMsg.iv, secret)
-                    val entity = MessageEntity(
-                        messageId = encMsg.messageId,
-                        senderId = encMsg.senderId,
-                        receiverId = encMsg.receiverId,
-                        content = plaintext,
-                        timestamp = encMsg.timestamp,
-                        isSentByMe = false
-                    )
-                    CoroutineScope(Dispatchers.IO).launch {
-                        try {
-                            chatDao.insertMessage(entity)
-                        } catch (e: Exception) {
-                            Log.e("ChatRepository", "Failed to persist received message", e)
+                val ctx = context ?: return
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        // RE-DERIVE OR FETCH SECRET using Their Ephemeral Public Key
+                        val secret = if (encMsg.ephemeralPublicKey != null) {
+                            KeyManager.getOrDeriveSharedSecret(
+                                context = ctx,
+                                myUserId = currentUserId,
+                                otherUserId = otherUserId,
+                                isSender = false,
+                                ephemeralPublicKeyBase64 = encMsg.ephemeralPublicKey
+                            )
+                        } else sharedSecret ?: run {
+                            _errorMessage.value = "Received message but missing ephemeral key and channel not ready."
+                            return@launch
                         }
+
+                        if (secret == null) {
+                            _errorMessage.value = "Could not derive shared secret for incoming message."
+                            return@launch
+                        }
+
+                        // Decrypt it
+                        val plaintext = KeyManager.decrypt(encMsg.ciphertext, encMsg.iv, secret)
+                        
+                        val entity = MessageEntity(
+                            messageId = encMsg.messageId,
+                            senderId = encMsg.senderId,
+                            receiverId = encMsg.receiverId,
+                            content = plaintext,
+                            timestamp = encMsg.timestamp,
+                            isSentByMe = false
+                        )
+
+                        // Save Locally
+                        chatDao.insertMessage(entity)
+
+                    } catch (e: Exception) {
+                        // Guardrail 6: decryption failure
+                        val err = ErrorHandler.classify(e)
+                        _errorMessage.value = "Message decryption failed: ${ErrorHandler.userMessage(err)}"
+                        Log.e("ChatRepository", "Decryption/Persist error", e)
+                    } finally {
+                        // ── EPHEMERAL STORAGE (PULL & DELETE) ──
+                        // Delete instantly even if decryption fails (e.g. sender used an old Identity Key)
+                        // to prevent an infinite crash loop on this listener.
+                        snapshot.ref.removeValue()
+                            .addOnSuccessListener { Log.d("ChatRepository", "Message ${encMsg.messageId} popped from server.") }
+                            .addOnFailureListener { e -> Log.e("ChatRepository", "Failed to delete message", e) }
                     }
-                } catch (e: Exception) {
-                    // Guardrail 6: decryption failure
-                    val err = ErrorHandler.classify(e)
-                    _errorMessage.value = "Message decryption failed: ${ErrorHandler.userMessage(err)}"
-                    Log.e("ChatRepository", "Decryption error", e)
                 }
             }
 

@@ -71,33 +71,8 @@ class AuthRepository(
         }
 
     // ── Login ────────────────────────────────────────────────────
-
-    /**
-     * Sign in via REST → then sign in via SDK to set currentUser.
-     */
-    suspend fun login(email: String, password: String): AuthResult<Unit> {
-        return try {
-            // 1. Validate credentials via REST (no reCAPTCHA)
-            val body = JSONObject().apply {
-                put("email", email)
-                put("password", password)
-                put("returnSecureToken", true)
-            }
-            val response = postJson(SIGN_IN_URL, body)
-
-            if (response.has("error")) {
-                val msg = response.getJSONObject("error").optString("message", "Login failed")
-                return AuthResult.Error(friendlyAuthError(msg))
-            }
-
-            // 2. Sign in via SDK to populate auth.currentUser
-            auth.signInWithEmailAndPassword(email, password).await()
-            AuthResult.Success(Unit)
-        } catch (e: Exception) {
-            Log.e(TAG, "Login failed", e)
-            AuthResult.Error(e.message ?: "An unknown error occurred")
-        }
-    }
+    
+    // Login function removed: Replaced by One-Install-One-Account flow (forced registration)
 
     // ── Register ─────────────────────────────────────────────────
 
@@ -126,6 +101,10 @@ class AuthRepository(
 
             if (signUpResp.has("error")) {
                 val msg = signUpResp.getJSONObject("error").optString("message", "Registration failed")
+                if (msg.contains("EMAIL_EXISTS")) {
+                    Log.d(TAG, "Intercepted EMAIL_EXISTS. Attempting ghost account recovery...")
+                    return handleGhostAccountRecovery(email, password, name, context)
+                }
                 return AuthResult.Error(friendlyAuthError(msg))
             }
 
@@ -161,6 +140,33 @@ class AuthRepository(
         }
     }
 
+    /**
+     * If a user reinstalls, their FirebaseAuth cache is empty, but their account still exists in the cloud.
+     * When they try to register the same email, it throws EMAIL_EXISTS.
+     * We prove ownership by signing in, wipe the old "ghost" data completely, and then re-register fresh keys.
+     */
+    private suspend fun handleGhostAccountRecovery(
+        email: String,
+        password: String,
+        name: String,
+        context: Context
+    ): AuthResult<Unit> {
+        try {
+            // 1. Prove ownership of the ghost account
+            auth.signInWithEmailAndPassword(email, password).await()
+            val user = auth.currentUser ?: return AuthResult.Error("Failed to claim old account.")
+            
+            // 2. Obliterate the ghost account data and auth record
+            deleteCurrentAccount(context, user.uid)
+            
+            // 3. Retry registration from scratch now that the email is freed
+            return register(email, password, name, context)
+        } catch (e: Exception) {
+            Log.e(TAG, "Ghost account recovery failed", e)
+            return AuthResult.Error("Email already in use. If this is your old account, please double check the password to overwrite it.")
+        }
+    }
+
     // ── Profile ──────────────────────────────────────────────────
 
     /** Read a user's profile from RTDB. Returns null if the node doesn't exist. */
@@ -191,10 +197,60 @@ class AuthRepository(
         }
     }
 
-    // ── Logout ───────────────────────────────────────────────────
+    // ── Logout & Account Deletion ────────────────────────────────
 
     fun logout() {
         auth.signOut()
+    }
+    
+    /**
+     * Completely destroys the account, removing all traces from Local DB, Keystore, 
+     * RTDB chats, RTDB Profile, and Firebase Auth.
+     */
+    suspend fun deleteCurrentAccount(context: Context, uid: String) {
+        try {
+            val user = auth.currentUser ?: return
+            
+            // 1. Clear Local SQLite Database & Get Contacts to wipe RTDB Chats
+            val db = com.example.chatapp.data.local.AppDatabase.getDatabase(context)
+            val contacts = db.chatDao().getAllContactsSync()
+            db.clearAllTables()
+
+            // 2. Clear all RTDB Chat Nodes we are a participant in (Global Scan)
+            // This ensures we clean up unreceived messages even if our local SQLite contacts are empty (e.g. after a reinstall)
+            try {
+                val allChats = rtdb.child("chats").get().await()
+                if (allChats.exists()) {
+                    for (chatSnapshot in allChats.children) {
+                        val convId = chatSnapshot.key
+                        if (convId != null && convId.contains(uid)) {
+                            chatSnapshot.ref.removeValue().await()
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.w(TAG, "Global chat scan failed (likely rules), falling back to local contacts", e)
+                for (contact in contacts) {
+                    val convId = listOf(uid, contact.userId).sorted().joinToString("_")
+                    rtdb.child("chats").child(convId).removeValue().await()
+                }
+            }
+
+            // 3. Delete RTDB Profile (Total destruction instead of soft delete)
+            rtdb.child("users").child(uid).removeValue().await()
+
+            // 4. Delete EC Identity Key from Android KeyStore
+            KeyManager.deleteIdentityKey(uid)
+            
+            // 5. Delete Firebase Auth Record
+            user.delete().await()
+            auth.signOut()
+            Log.d(TAG, "Account successfully obliterated from system")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to fully delete account", e)
+            auth.signOut() 
+            throw e
+        }
     }
 
     // ── Helpers ──────────────────────────────────────────────────

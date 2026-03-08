@@ -72,6 +72,13 @@ object KeyManager {
         Log.d(TAG, "Published identity for $userId ($displayName) to RTDB")
     }
 
+    fun hasPrivateKey(userId: String): Boolean {
+        val alias = KEYSTORE_ALIAS_PREFIX + userId
+        val keyStore = KeyStore.getInstance("AndroidKeyStore")
+        keyStore.load(null)
+        return keyStore.containsAlias(alias)
+    }
+
     /**
      * Get our private key from AndroidKeyStore.
      */
@@ -79,46 +86,92 @@ object KeyManager {
         val alias = KEYSTORE_ALIAS_PREFIX + userId
         val keyStore = KeyStore.getInstance("AndroidKeyStore")
         keyStore.load(null)
-        return (keyStore.getEntry(alias, null) as KeyStore.PrivateKeyEntry).privateKey
+        val entry = keyStore.getEntry(alias, null) as? KeyStore.PrivateKeyEntry
+            ?: throw IllegalStateException("Private key missing for $userId. Account keys lost.")
+        return entry.privateKey
+    }
+
+    /**
+     * Completely remove the identity key from the Keystore.
+     */
+    fun deleteIdentityKey(userId: String) {
+        val alias = KEYSTORE_ALIAS_PREFIX + userId
+        val keyStore = KeyStore.getInstance("AndroidKeyStore")
+        keyStore.load(null)
+        if (keyStore.containsAlias(alias)) {
+            keyStore.deleteEntry(alias)
+        }
+    }
+
+    // ── Tier 1.5: Ephemeral Session Keys (OTKE) ──────────────────
+
+    data class EphemeralKeyPair(val privateKey: java.security.PrivateKey, val publicKeyBase64: String)
+
+    /**
+     * Generate a one-time EC key pair for a new chat session to guarantee Forward Secrecy.
+     * This key is NOT saved to the AndroidKeyStore; it is held in memory purely to derive
+     * the shared secret and then discarded.
+     */
+    fun generateEphemeralKeyPair(): EphemeralKeyPair {
+        val kpg = KeyPairGenerator.getInstance("EC")
+        kpg.initialize(ECGenParameterSpec("secp256r1"))
+        val keyPair = kpg.generateKeyPair()
+
+        val pubBase64 = Base64.encodeToString(keyPair.public.encoded, Base64.NO_WRAP)
+        return EphemeralKeyPair(keyPair.private, pubBase64)
     }
 
     // ── Tier 2: Per-Conversation Shared Secret ───────────────────
 
     /**
      * Derive (or retrieve cached) shared secret for a conversation.
-     * Returns null if the other user's public key is not yet available.
+     * Use cases:
+     * 1. SENDER: Uses their own ephemeral private key + Receiver's static Identity Public Key
+     * 2. RECEIVER: Uses their own static Identity Private Key + Sender's ephemeral Public Key
      */
     suspend fun getOrDeriveSharedSecret(
         context: Context,
         myUserId: String,
-        otherUserId: String
+        otherUserId: String,
+        isSender: Boolean,
+        ephemeralPrivateKey: java.security.PrivateKey? = null,
+        ephemeralPublicKeyBase64: String? = null
     ): ByteArray? {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val cacheKey = "shared_${myUserId}_$otherUserId"
 
-        // Check cache first
+        // Check cache first (once established, we reuse it)
         val cached = prefs.getString(cacheKey, null)
-        if (cached != null) {
+        if (cached != null && ephemeralPrivateKey == null && ephemeralPublicKeyBase64 == null) {
             return Base64.decode(cached, Base64.NO_WRAP)
         }
 
-        // Fetch other user's public key from RTDB
-        val snapshot = com.example.chatapp.data.repository.RtdbHelper.db
-            .getReference("users/$otherUserId/publicKey")
-            .get()
-            .await()
+        // Determine which keys to use for the ECDH exchange
+        val myPrivate: java.security.PrivateKey
+        val otherPublicBase64: String
 
-        val otherPubKeyBase64 = snapshot.getValue(String::class.java) ?: return null
+        if (isSender) {
+            // Sender: Use ephemeral private key + Receiver's static identity key
+            myPrivate = ephemeralPrivateKey ?: throw IllegalArgumentException("Sender must provide ephemeral private key")
+            val snapshot = com.example.chatapp.data.repository.RtdbHelper.db
+                .getReference("users/$otherUserId/publicKey")
+                .get()
+                .await()
+            otherPublicBase64 = snapshot.getValue(String::class.java) ?: return null
+        } else {
+            // Receiver: Use static identity private key + Sender's ephemeral public key
+            myPrivate = getPrivateKey(myUserId)
+            otherPublicBase64 = ephemeralPublicKeyBase64 ?: throw IllegalArgumentException("Receiver must provide ephemeral public key")
+        }
 
-        // Decode their public key
-        val otherPubKeyBytes = Base64.decode(otherPubKeyBase64, Base64.NO_WRAP)
+        // Decode the public key
+        val otherPubKeyBytes = Base64.decode(otherPublicBase64, Base64.NO_WRAP)
         val keyFactory = KeyFactory.getInstance("EC")
         val otherPublicKey = keyFactory.generatePublic(X509EncodedKeySpec(otherPubKeyBytes))
 
         // ECDH key agreement
-        val myPrivateKey = getPrivateKey(myUserId)
         val keyAgreement = KeyAgreement.getInstance("ECDH")
-        keyAgreement.init(myPrivateKey)
+        keyAgreement.init(myPrivate)
         keyAgreement.doPhase(otherPublicKey, true)
         val rawSecret = keyAgreement.generateSecret()
 
@@ -131,7 +184,7 @@ object KeyManager {
             .putString(cacheKey, Base64.encodeToString(sharedSecret, Base64.NO_WRAP))
             .apply()
 
-        Log.d(TAG, "Derived shared secret for conversation with $otherUserId")
+        Log.d(TAG, "Derived shared secret for conversation with $otherUserId (isSender=$isSender)")
         return sharedSecret
     }
 

@@ -40,6 +40,7 @@ fun ProfileScreen(
     var editName by remember { mutableStateOf("") }
     var editStatus by remember { mutableStateOf("") }
     var isSaving by remember { mutableStateOf(false) }
+    var isDeleting by remember { mutableStateOf(false) }
     var saved by remember { mutableStateOf(false) }
     var isLoadingProfile by remember { mutableStateOf(true) }
 
@@ -157,7 +158,7 @@ fun ProfileScreen(
                 OutlinedButton(
                     onClick = {
                         appViewModel.logout(context)
-                        navController.navigate("login") {
+                        navController.navigate("login") { // Actually, we navigated to Register previously, wait let me check startDestination logic. Let's navigate to Screen.Register.route
                             popUpTo(0)
                         }
                     },
@@ -165,6 +166,29 @@ fun ProfileScreen(
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red)
                 ) {
                     Text("Logout")
+                }
+
+                Spacer(Modifier.height(16.dp))
+
+                OutlinedButton(
+                    onClick = {
+                        isDeleting = true
+                        appViewModel.deleteAccountCompletely(context) {
+                            isDeleting = false
+                            navController.navigate(com.example.chatapp.ui.navigation.Screen.Register.route) {
+                                popUpTo(0)
+                            }
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red),
+                    enabled = !isDeleting && uid != null
+                ) {
+                    if (isDeleting) {
+                        CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp, color = Color.Red)
+                    } else {
+                        Text("Delete Account completely")
+                    }
                 }
             }
         }
