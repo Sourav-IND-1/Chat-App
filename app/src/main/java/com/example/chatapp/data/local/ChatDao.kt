@@ -14,6 +14,20 @@ interface ChatDao {
     @Query("SELECT * FROM users")
     fun getAllContacts(): Flow<List<UserEntity>>
 
+    @Query("""
+        SELECT u.* FROM users u
+        LEFT JOIN messages m ON (u.userId = m.senderId OR u.userId = m.receiverId)
+        GROUP BY u.userId
+        ORDER BY MAX(m.timestamp) DESC
+    """)
+    fun getContactsSortedByRecentMessage(): Flow<List<UserEntity>>
+
+    @Query("SELECT COUNT(*) FROM messages WHERE senderId = :theirUserId AND receiverId = :myUserId AND isRead = 0")
+    fun getUnreadCount(myUserId: String, theirUserId: String): Flow<Int>
+
+    @Query("UPDATE messages SET isRead = 1 WHERE senderId = :theirUserId AND receiverId = :myUserId")
+    fun markMessagesAsRead(myUserId: String, theirUserId: String)
+
     @Query("SELECT * FROM users")
     @JvmSuppressWildcards
     suspend fun getAllContactsSync(): List<UserEntity>

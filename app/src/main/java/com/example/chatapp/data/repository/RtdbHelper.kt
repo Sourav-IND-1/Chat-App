@@ -13,7 +13,9 @@ object RtdbHelper {
         "https://chatting-27210-default-rtdb.asia-southeast1.firebasedatabase.app"
 
     val db: FirebaseDatabase by lazy {
-        FirebaseDatabase.getInstance(RTDB_URL)
+        FirebaseDatabase.getInstance(RTDB_URL).apply {
+            setPersistenceEnabled(true)
+        }
     }
 
     val ref: DatabaseReference get() = db.reference

@@ -89,6 +89,10 @@ class ChatViewModel(
         }
     }
 
+    fun markAsRead() {
+        chatRepository.markMessagesAsRead(otherUserId)
+    }
+
     fun clearError() = chatRepository.clearError()
 
     override fun onCleared() {
@@ -153,11 +157,12 @@ fun ChatScreen(
         }
     }
 
-    // Auto-scroll to bottom
+    // Auto-scroll to bottom and mark messages as read
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
             listState.animateScrollToItem(messages.size - 1)
         }
+        viewModel.markAsRead()
     }
 
     Scaffold(
@@ -285,7 +290,7 @@ fun ChatScreen(
                 contentPadding = PaddingValues(vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                items(messages) { message ->
+                items(messages, key = { it.messageId }) { message ->
                     ChatBubble(message = message)
                 }
             }

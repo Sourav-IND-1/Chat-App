@@ -166,6 +166,58 @@ class AuthRepository(
     }
 
     /**
+     * Google Sign-In Flow:
+     * 1. Exchange Google ID Token for Firebase Credential
+     * 2. Sign in or Create account in Firebase Auth
+     * 3. Sync profile to RTDB and generate EC Keys
+     */
+    suspend fun signInWithGoogle(context: Context, idToken: String): AuthResult<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val credential = com.google.firebase.auth.GoogleAuthProvider.getCredential(idToken, null)
+            val authResult = auth.signInWithCredential(credential).await()
+            val user = authResult.user ?: throw Exception("Google Sign-In failed")
+
+            val isNewUser = authResult.additionalUserInfo?.isNewUser == true
+            val name = user.displayName ?: "Google User"
+            val email = user.email ?: ""
+            val uid = user.uid
+
+            if (isNewUser) {
+                // Claim username (using a sanitized version of their name or email prefix)
+                val baseUsername = (user.email?.substringBefore("@") ?: name.replace(" ", "")).lowercase()
+                var finalUsername = baseUsername
+                var counter = 1
+                
+                // Keep checking until we find an available username
+                while (rtdb.child("usernames").child(finalUsername).get().await().exists()) {
+                    finalUsername = "$baseUsername$counter"
+                    counter++
+                }
+                rtdb.child("usernames").child(finalUsername).setValue(uid).await()
+
+                // Save initial profile
+                val profileData = mapOf(
+                    "name" to name,
+                    "status" to "Available",
+                    "email" to email,
+                    "profilePhotoUrl" to (user.photoUrl?.toString() ?: "")
+                )
+                rtdb.child("users").child(uid).setValue(profileData).await()
+
+                // Generate keys immediately for new users
+                KeyManager.initIdentityKey(context, uid, name)
+            } else {
+                // For returning users, just ensure their keys still exist locally
+                ensurePublicKey(context, uid, name)
+            }
+
+            AuthResult.Success(Unit)
+        } catch (e: Exception) {
+            Log.e(TAG, "Google Sign-In failed", e)
+            AuthResult.Error(e.message ?: "Failed to sign in with Google")
+        }
+    }
+    /**
      * If a user reinstalls, their FirebaseAuth cache is empty, but their account still exists in the cloud.
      * When they try to register the same email, it throws EMAIL_EXISTS.
      * We prove ownership by signing in, wipe the old "ghost" data completely, and then re-register fresh keys.

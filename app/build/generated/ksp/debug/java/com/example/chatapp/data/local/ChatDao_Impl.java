@@ -8,11 +8,13 @@ import androidx.room.CoroutinesRoom;
 import androidx.room.EntityInsertionAdapter;
 import androidx.room.RoomDatabase;
 import androidx.room.RoomSQLiteQuery;
+import androidx.room.SharedSQLiteStatement;
 import androidx.room.util.CursorUtil;
 import androidx.room.util.DBUtil;
 import androidx.sqlite.db.SupportSQLiteStatement;
 import java.lang.Class;
 import java.lang.Exception;
+import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
@@ -33,6 +35,8 @@ public final class ChatDao_Impl implements ChatDao {
   private final EntityInsertionAdapter<UserEntity> __insertionAdapterOfUserEntity;
 
   private final EntityInsertionAdapter<MessageEntity> __insertionAdapterOfMessageEntity;
+
+  private final SharedSQLiteStatement __preparedStmtOfMarkMessagesAsRead;
 
   public ChatDao_Impl(@NonNull final RoomDatabase __db) {
     this.__db = __db;
@@ -64,7 +68,7 @@ public final class ChatDao_Impl implements ChatDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR REPLACE INTO `messages` (`messageId`,`senderId`,`receiverId`,`content`,`timestamp`,`isSentByMe`) VALUES (?,?,?,?,?,?)";
+        return "INSERT OR REPLACE INTO `messages` (`messageId`,`senderId`,`receiverId`,`content`,`timestamp`,`isSentByMe`,`isRead`) VALUES (?,?,?,?,?,?,?)";
       }
 
       @Override
@@ -77,6 +81,16 @@ public final class ChatDao_Impl implements ChatDao {
         statement.bindLong(5, entity.getTimestamp());
         final int _tmp = entity.isSentByMe() ? 1 : 0;
         statement.bindLong(6, _tmp);
+        final int _tmp_1 = entity.isRead() ? 1 : 0;
+        statement.bindLong(7, _tmp_1);
+      }
+    };
+    this.__preparedStmtOfMarkMessagesAsRead = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "UPDATE messages SET isRead = 1 WHERE senderId = ? AND receiverId = ?";
+        return _query;
       }
     };
   }
@@ -104,6 +118,27 @@ public final class ChatDao_Impl implements ChatDao {
       return _result;
     } finally {
       __db.endTransaction();
+    }
+  }
+
+  @Override
+  public void markMessagesAsRead(final String myUserId, final String theirUserId) {
+    __db.assertNotSuspendingTransaction();
+    final SupportSQLiteStatement _stmt = __preparedStmtOfMarkMessagesAsRead.acquire();
+    int _argIndex = 1;
+    _stmt.bindString(_argIndex, theirUserId);
+    _argIndex = 2;
+    _stmt.bindString(_argIndex, myUserId);
+    try {
+      __db.beginTransaction();
+      try {
+        _stmt.executeUpdateDelete();
+        __db.setTransactionSuccessful();
+      } finally {
+        __db.endTransaction();
+      }
+    } finally {
+      __preparedStmtOfMarkMessagesAsRead.release(_stmt);
     }
   }
 
@@ -142,6 +177,96 @@ public final class ChatDao_Impl implements ChatDao {
             }
             _item = new UserEntity(_tmpUserId,_tmpName,_tmpProfilePhotoUrl,_tmpStatus);
             _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+        }
+      }
+
+      @Override
+      protected void finalize() {
+        _statement.release();
+      }
+    });
+  }
+
+  @Override
+  public Flow<List<UserEntity>> getContactsSortedByRecentMessage() {
+    final String _sql = "\n"
+            + "        SELECT u.* FROM users u\n"
+            + "        LEFT JOIN messages m ON (u.userId = m.senderId OR u.userId = m.receiverId)\n"
+            + "        GROUP BY u.userId\n"
+            + "        ORDER BY MAX(m.timestamp) DESC\n"
+            + "    ";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
+    return CoroutinesRoom.createFlow(__db, false, new String[] {"users",
+        "messages"}, new Callable<List<UserEntity>>() {
+      @Override
+      @NonNull
+      public List<UserEntity> call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final int _cursorIndexOfUserId = CursorUtil.getColumnIndexOrThrow(_cursor, "userId");
+          final int _cursorIndexOfName = CursorUtil.getColumnIndexOrThrow(_cursor, "name");
+          final int _cursorIndexOfProfilePhotoUrl = CursorUtil.getColumnIndexOrThrow(_cursor, "profilePhotoUrl");
+          final int _cursorIndexOfStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "status");
+          final List<UserEntity> _result = new ArrayList<UserEntity>(_cursor.getCount());
+          while (_cursor.moveToNext()) {
+            final UserEntity _item;
+            final String _tmpUserId;
+            _tmpUserId = _cursor.getString(_cursorIndexOfUserId);
+            final String _tmpName;
+            _tmpName = _cursor.getString(_cursorIndexOfName);
+            final String _tmpProfilePhotoUrl;
+            if (_cursor.isNull(_cursorIndexOfProfilePhotoUrl)) {
+              _tmpProfilePhotoUrl = null;
+            } else {
+              _tmpProfilePhotoUrl = _cursor.getString(_cursorIndexOfProfilePhotoUrl);
+            }
+            final String _tmpStatus;
+            if (_cursor.isNull(_cursorIndexOfStatus)) {
+              _tmpStatus = null;
+            } else {
+              _tmpStatus = _cursor.getString(_cursorIndexOfStatus);
+            }
+            _item = new UserEntity(_tmpUserId,_tmpName,_tmpProfilePhotoUrl,_tmpStatus);
+            _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+        }
+      }
+
+      @Override
+      protected void finalize() {
+        _statement.release();
+      }
+    });
+  }
+
+  @Override
+  public Flow<Integer> getUnreadCount(final String myUserId, final String theirUserId) {
+    final String _sql = "SELECT COUNT(*) FROM messages WHERE senderId = ? AND receiverId = ? AND isRead = 0";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 2);
+    int _argIndex = 1;
+    _statement.bindString(_argIndex, theirUserId);
+    _argIndex = 2;
+    _statement.bindString(_argIndex, myUserId);
+    return CoroutinesRoom.createFlow(__db, false, new String[] {"messages"}, new Callable<Integer>() {
+      @Override
+      @NonNull
+      public Integer call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final Integer _result;
+          if (_cursor.moveToFirst()) {
+            final int _tmp;
+            _tmp = _cursor.getInt(0);
+            _result = _tmp;
+          } else {
+            _result = 0;
           }
           return _result;
         } finally {
@@ -269,6 +394,7 @@ public final class ChatDao_Impl implements ChatDao {
           final int _cursorIndexOfContent = CursorUtil.getColumnIndexOrThrow(_cursor, "content");
           final int _cursorIndexOfTimestamp = CursorUtil.getColumnIndexOrThrow(_cursor, "timestamp");
           final int _cursorIndexOfIsSentByMe = CursorUtil.getColumnIndexOrThrow(_cursor, "isSentByMe");
+          final int _cursorIndexOfIsRead = CursorUtil.getColumnIndexOrThrow(_cursor, "isRead");
           final List<MessageEntity> _result = new ArrayList<MessageEntity>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final MessageEntity _item;
@@ -286,7 +412,11 @@ public final class ChatDao_Impl implements ChatDao {
             final int _tmp;
             _tmp = _cursor.getInt(_cursorIndexOfIsSentByMe);
             _tmpIsSentByMe = _tmp != 0;
-            _item = new MessageEntity(_tmpMessageId,_tmpSenderId,_tmpReceiverId,_tmpContent,_tmpTimestamp,_tmpIsSentByMe);
+            final boolean _tmpIsRead;
+            final int _tmp_1;
+            _tmp_1 = _cursor.getInt(_cursorIndexOfIsRead);
+            _tmpIsRead = _tmp_1 != 0;
+            _item = new MessageEntity(_tmpMessageId,_tmpSenderId,_tmpReceiverId,_tmpContent,_tmpTimestamp,_tmpIsSentByMe,_tmpIsRead);
             _result.add(_item);
           }
           return _result;
@@ -327,6 +457,7 @@ public final class ChatDao_Impl implements ChatDao {
           final int _cursorIndexOfContent = CursorUtil.getColumnIndexOrThrow(_cursor, "content");
           final int _cursorIndexOfTimestamp = CursorUtil.getColumnIndexOrThrow(_cursor, "timestamp");
           final int _cursorIndexOfIsSentByMe = CursorUtil.getColumnIndexOrThrow(_cursor, "isSentByMe");
+          final int _cursorIndexOfIsRead = CursorUtil.getColumnIndexOrThrow(_cursor, "isRead");
           final MessageEntity _result;
           if (_cursor.moveToFirst()) {
             final String _tmpMessageId;
@@ -343,7 +474,11 @@ public final class ChatDao_Impl implements ChatDao {
             final int _tmp;
             _tmp = _cursor.getInt(_cursorIndexOfIsSentByMe);
             _tmpIsSentByMe = _tmp != 0;
-            _result = new MessageEntity(_tmpMessageId,_tmpSenderId,_tmpReceiverId,_tmpContent,_tmpTimestamp,_tmpIsSentByMe);
+            final boolean _tmpIsRead;
+            final int _tmp_1;
+            _tmp_1 = _cursor.getInt(_cursorIndexOfIsRead);
+            _tmpIsRead = _tmp_1 != 0;
+            _result = new MessageEntity(_tmpMessageId,_tmpSenderId,_tmpReceiverId,_tmpContent,_tmpTimestamp,_tmpIsSentByMe,_tmpIsRead);
           } else {
             _result = null;
           }
@@ -376,6 +511,7 @@ public final class ChatDao_Impl implements ChatDao {
           final int _cursorIndexOfContent = CursorUtil.getColumnIndexOrThrow(_cursor, "content");
           final int _cursorIndexOfTimestamp = CursorUtil.getColumnIndexOrThrow(_cursor, "timestamp");
           final int _cursorIndexOfIsSentByMe = CursorUtil.getColumnIndexOrThrow(_cursor, "isSentByMe");
+          final int _cursorIndexOfIsRead = CursorUtil.getColumnIndexOrThrow(_cursor, "isRead");
           final MessageEntity _result;
           if (_cursor.moveToFirst()) {
             final String _tmpMessageId;
@@ -392,7 +528,11 @@ public final class ChatDao_Impl implements ChatDao {
             final int _tmp;
             _tmp = _cursor.getInt(_cursorIndexOfIsSentByMe);
             _tmpIsSentByMe = _tmp != 0;
-            _result = new MessageEntity(_tmpMessageId,_tmpSenderId,_tmpReceiverId,_tmpContent,_tmpTimestamp,_tmpIsSentByMe);
+            final boolean _tmpIsRead;
+            final int _tmp_1;
+            _tmp_1 = _cursor.getInt(_cursorIndexOfIsRead);
+            _tmpIsRead = _tmp_1 != 0;
+            _result = new MessageEntity(_tmpMessageId,_tmpSenderId,_tmpReceiverId,_tmpContent,_tmpTimestamp,_tmpIsSentByMe,_tmpIsRead);
           } else {
             _result = null;
           }

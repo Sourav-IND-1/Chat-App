@@ -120,6 +120,12 @@ class ChatRepository(
             entities.map { it.toDomainModel() }
         }
 
+    fun markMessagesAsRead(otherUserId: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            chatDao.markMessagesAsRead(myUserId = currentUserId, theirUserId = otherUserId)
+        }
+    }
+
     suspend fun sendMessage(receiverId: String, content: String) {
         val messageId = UUID.randomUUID().toString()
         val timestamp = System.currentTimeMillis()
@@ -151,11 +157,6 @@ class ChatRepository(
             return
         }
 
-        // Guardrail 4: no internet (soft fail — message is already saved locally)
-        if (context != null && !ConnectivityObserver.isConnected(context)) {
-            _errorMessage.value = "No internet — message saved locally. Will sync when reconnected."
-            return
-        }
 
             // Encrypt and push to RTDB (Global Inbox Model)
         try {
@@ -226,7 +227,10 @@ class ChatRepository(
                             isSentByMe = false
                         )
 
-                        // 3. Contact Sync: If sender is not in our local DB, fetch their profile and save them
+                        // 3. Save Message Locally FIRST so the UI updates instantly
+                        chatDao.insertMessage(entity)
+
+                        // 4. Contact Sync: If sender is not in our local DB, fetch their profile and save them asynchronously
                         if (chatDao.getUserById(encMsg.senderId) == null) {
                             try {
                                 val senderProfile = rtdb.child("users").child(encMsg.senderId).get().await()
@@ -246,9 +250,6 @@ class ChatRepository(
                                 Log.w("ChatRepository", "Failed to fetch new contact profile", e)
                             }
                         }
-
-                        // 4. Save Locally (SQLite handles ordering and grouping by conversation ID)
-                        chatDao.insertMessage(entity)
 
                     } catch (e: Exception) {
                         // Guardrail 6: decryption failure (e.g., they encrypted with an old public key)
@@ -299,10 +300,10 @@ class ChatRepository(
 // Extension functions
 fun MessageEntity.toDomainModel() = Message(
     messageId = messageId, senderId = senderId, receiverId = receiverId,
-    content = content, timestamp = timestamp, isSentByMe = isSentByMe
+    content = content, timestamp = timestamp, isSentByMe = isSentByMe, isRead = isRead
 )
 
 fun Message.toEntity() = MessageEntity(
     messageId = messageId, senderId = senderId, receiverId = receiverId,
-    content = content, timestamp = timestamp, isSentByMe = isSentByMe
+    content = content, timestamp = timestamp, isSentByMe = isSentByMe, isRead = isRead
 )

@@ -31,6 +31,9 @@ android {
         }
         val apiKey = localProperties.getProperty("FIREBASE_WEB_API_KEY") ?: ""
         buildConfigField("String", "FIREBASE_WEB_API_KEY", "\"$apiKey\"")
+        
+        val googleClientId = localProperties.getProperty("GOOGLE_WEB_CLIENT_ID") ?: ""
+        buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleClientId\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -69,6 +72,11 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-database")
+    
+    // Google Sign-In (Credential Manager APIs)
+    implementation("androidx.credentials:credentials:1.2.1")
+    implementation("androidx.credentials:credentials-play-services-auth:1.2.1")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.0")
     
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.8.7")

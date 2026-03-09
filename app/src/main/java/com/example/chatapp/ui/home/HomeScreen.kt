@@ -86,7 +86,7 @@ fun HomeScreen(
 ) {
     val context = LocalContext.current
     val db = remember { AppDatabase.getDatabase(context) }
-    val contacts by db.chatDao().getAllContacts().collectAsState(initial = emptyList())
+    val contacts by db.chatDao().getContactsSortedByRecentMessage().collectAsState(initial = emptyList())
     val currentUserId = remember { com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: "" }
 
     var selectedTab by remember { mutableIntStateOf(0) }
@@ -313,6 +313,10 @@ fun ChatListItem(user: UserEntity, db: AppDatabase, currentUserId: String, onCli
         .getLatestMessageForUser(currentUserId, user.userId)
         .collectAsState(initial = null)
         
+    val unreadCount by db.chatDao()
+        .getUnreadCount(currentUserId, user.userId)
+        .collectAsState(initial = 0)
+
     val displayName = if (user.status == "Deleted Account") "${user.name} [DELETED]" else user.name
 
     Row(
@@ -345,13 +349,37 @@ fun ChatListItem(user: UserEntity, db: AppDatabase, currentUserId: String, onCli
                 }
             }
             Spacer(modifier = Modifier.height(2.dp))
-            Text(
-                text = latestMessage?.content ?: "Tap to start chatting",
-                fontSize = 14.sp,
-                color = Color.Gray,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = latestMessage?.content ?: "Tap to start chatting",
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
+                )
+                if (unreadCount > 0) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Surface(
+                        shape = CircleShape,
+                        color = AppBlue,
+                        modifier = Modifier.sizeIn(minWidth = 20.dp, minHeight = 20.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(horizontal = 4.dp)) {
+                            Text(
+                                text = unreadCount.toString(),
+                                color = Color.White,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }

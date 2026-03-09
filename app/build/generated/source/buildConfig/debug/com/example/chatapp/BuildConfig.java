@@ -11,4 +11,6 @@ public final class BuildConfig {
   public static final String VERSION_NAME = "1.0";
   // Field from default config.
   public static final String FIREBASE_WEB_API_KEY = "AIzaSyAcFtIQWn-Rzr99cg_2MzCIHjuqM0qQRI4";
+  // Field from default config.
+  public static final String GOOGLE_WEB_CLIENT_ID = "551919609978-0b1dpiv3280i01iehu2pia18l3j6nc0b.apps.googleusercontent.com";
 }
