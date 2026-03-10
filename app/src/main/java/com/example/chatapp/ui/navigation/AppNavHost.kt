@@ -49,7 +49,7 @@ fun AppNavHost(
 
     NavHost(navController = navController, startDestination = startDestination) {
         composable(Screen.Register.route) {
-            RegisterScreen(navController)
+            RegisterScreen(navController, appViewModel)
         }
         composable(Screen.Home.route) {
             HomeScreen(navController)

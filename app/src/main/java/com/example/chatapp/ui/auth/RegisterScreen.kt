@@ -17,10 +17,11 @@ import com.example.chatapp.BuildConfig
 import com.example.chatapp.data.repository.AuthRepository
 import com.example.chatapp.domain.model.AuthResult
 import com.example.chatapp.ui.navigation.Screen
+import com.example.chatapp.ui.AppViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun RegisterScreen(navController: NavController) {
+fun RegisterScreen(navController: NavController, appViewModel: AppViewModel) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val authRepo = remember { AuthRepository() }
@@ -95,6 +96,7 @@ fun RegisterScreen(navController: NavController) {
                         )
                         when (result) {
                             is AuthResult.Success -> {
+                                appViewModel.checkStartupState(context)
                                 navController.navigate(Screen.Home.route) {
                                     popUpTo(0) { inclusive = true }
                                 }
@@ -144,6 +146,7 @@ fun RegisterScreen(navController: NavController) {
                                 val authResult = authRepo.signInWithGoogle(context, googleIdTokenCredential.idToken)
                                 when (authResult) {
                                     is AuthResult.Success -> {
+                                        appViewModel.checkStartupState(context)
                                         navController.navigate(Screen.Home.route) {
                                             popUpTo(0) { inclusive = true }
                                         }
