@@ -12,5 +12,12 @@ data class MessageEntity(
     val content: String,
     val timestamp: Long,
     val isSentByMe: Boolean,
-    val isRead: Boolean = false
+    val isRead: Boolean = false,
+    
+    // Cloudinary E2EE Media Support
+    val mediaUrl: String? = null,
+    val mediaKey: String? = null,
+    val mediaIv: String? = null,
+    val mediaType: String? = null,
+    val mediaFileName: String? = null
 )

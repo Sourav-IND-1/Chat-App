@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -32,7 +33,8 @@ class ChatRepository(
     private val context: Context? = null
 ) {
     private val rtdb = RtdbHelper.ref
-    private var messageListener: ChildEventListener? = null
+    private var textListener: ChildEventListener? = null
+    private var imageListener: ChildEventListener? = null
     private var listeningConvId: String? = null
 
     private val _channelState = MutableStateFlow(ChannelState.PENDING)
@@ -126,6 +128,53 @@ class ChatRepository(
         }
     }
 
+    private fun deleteCachedMedia(messageId: String, mediaFileName: String?) {
+        val ctx = context ?: return
+        val mediaDir = java.io.File(ctx.filesDir, "media")
+        val name = mediaFileName ?: "${messageId}_media"
+        val file = java.io.File(mediaDir, name)
+        if (file.exists()) file.delete()
+    }
+
+    fun clearChatWithUser(otherUserId: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                chatDao.getMessagesWithUser(currentUserId, otherUserId).first().forEach { msg ->
+                    deleteCachedMedia(msg.messageId, msg.mediaFileName)
+                }
+                chatDao.clearMessagesWithUser(currentUserId, otherUserId)
+            } catch (e: Exception) {
+                Log.e("ChatRepository", "Failed to clear chat messages", e)
+            }
+        }
+    }
+
+    fun deleteMessages(messageIds: List<String>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val all = chatDao.getMessagesByIds(messageIds)
+                all.forEach { deleteCachedMedia(it.messageId, it.mediaFileName) }
+                chatDao.deleteMessages(messageIds)
+            } catch (e: Exception) {
+                Log.e("ChatRepository", "Failed to delete specific messages", e)
+            }
+        }
+    }
+
+    fun deleteChatAndContact(otherUserId: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                chatDao.getMessagesWithUser(currentUserId, otherUserId).first().forEach { msg ->
+                    deleteCachedMedia(msg.messageId, msg.mediaFileName)
+                }
+                chatDao.clearMessagesWithUser(currentUserId, otherUserId)
+                chatDao.deleteUser(otherUserId)
+            } catch (e: Exception) {
+                Log.e("ChatRepository", "Failed to delete chat and contact", e)
+            }
+        }
+    }
+
     suspend fun sendMessage(receiverId: String, content: String) {
         val messageId = UUID.randomUUID().toString()
         val timestamp = System.currentTimeMillis()
@@ -158,7 +207,7 @@ class ChatRepository(
         }
 
 
-            // Encrypt and push to RTDB (Global Inbox Model)
+            // Encrypt and push to RTDB (Global Inbox Model) under "texts" category
         try {
             val result = KeyManager.encrypt(content, secret)
             val encMsg = EncryptedMessage(
@@ -170,7 +219,7 @@ class ChatRepository(
                 timestamp = timestamp,
                 ephemeralPublicKey = ephemeralKeyPair?.publicKeyBase64 // Attach our ephemeral public key
             )
-            rtdb.child("user_inboxes").child(receiverId).child(messageId).setValue(encMsg).await()
+            rtdb.child("user_inboxes").child(receiverId).child("texts").child(messageId).setValue(encMsg).await()
         } catch (e: Exception) {
             // Guardrail 5: RTDB / crypto error
             val err = ErrorHandler.classify(e)
@@ -179,58 +228,137 @@ class ChatRepository(
         }
     }
 
+    fun sendMediaMessage(
+        messageId: String,
+        receiverId: String,
+        mediaUrl: String,
+        mediaKey: String,
+        mediaIv: String,
+        mediaType: String,
+        mediaFileName: String?
+    ) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                // Get pre-established key
+                val secret = sharedSecret
+                if (secret == null) {
+                    _errorMessage.value = "No secure channel established yet."
+                    return@launch
+                }
+
+                val timestamp = System.currentTimeMillis()
+
+                val payload = org.json.JSONObject().apply {
+                    put("mediaUrl", mediaUrl)
+                    put("mediaKey", mediaKey)
+                    put("mediaIv", mediaIv)
+                    put("mediaType", mediaType)
+                    if (mediaFileName != null) put("mediaFileName", mediaFileName)
+                }.toString()
+
+                val encResult = KeyManager.encrypt(payload, secret)
+                
+                val encMsg = EncryptedMessage(
+                    messageId = messageId,
+                    senderId = currentUserId,
+                    receiverId = receiverId,
+                    ciphertext = encResult.ciphertext,
+                    iv = encResult.iv,
+                    timestamp = timestamp,
+                    ephemeralPublicKey = ephemeralKeyPair?.publicKeyBase64 
+                )
+
+                val entity = MessageEntity(
+                    messageId = messageId,
+                    senderId = currentUserId,
+                    receiverId = receiverId,
+                    content = "[$mediaType]",
+                    timestamp = timestamp,
+                    isSentByMe = true,
+                    mediaUrl = mediaUrl,
+                    mediaKey = mediaKey,
+                    mediaIv = mediaIv,
+                    mediaType = mediaType,
+                    mediaFileName = mediaFileName
+                )
+
+                chatDao.insertMessage(entity)
+
+                // Push envelope to receiver's categorized inbox
+                rtdb.child("user_inboxes").child(receiverId).child("media").child(messageId).setValue(encMsg).await()
+            } catch (e: Exception) {
+                Log.e("ChatRepository", "Failed to send media message", e)
+            }
+        }
+    }
+
     // ── RTDB Listener (Global Inbox) ─────────────────────────────
 
-    fun startGlobalListener() {
-        if (messageListener != null) return // Already listening
-
-        messageListener = object : ChildEventListener {
+    private fun createInboxListener(category: String): ChildEventListener {
+        return object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 val encMsg = snapshot.getValue(EncryptedMessage::class.java) ?: return
-                // We shouldn't receive our own messages in our inbox, but just in case:
                 if (encMsg.senderId == currentUserId) return
 
                 val ctx = context ?: return
 
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
-                        // 1. RE-DERIVE SECRET using Their Ephemeral Public Key
-                        // Since this is a global inbox, we don't know who the sender is until the message arrives.
-                        // We must derive the secret on the fly for EVERY incoming message based on its senderId.
                         val secret = if (encMsg.ephemeralPublicKey != null) {
                             KeyManager.getOrDeriveSharedSecret(
                                 context = ctx,
                                 myUserId = currentUserId,
-                                otherUserId = encMsg.senderId, // Derive based on whoever sent this
+                                otherUserId = encMsg.senderId,
                                 isSender = false,
                                 ephemeralPublicKeyBase64 = encMsg.ephemeralPublicKey
                             )
                         } else null 
                         
-                        // Fallback if we already derived the secret for an active chat session
                         val finalSecret = secret ?: sharedSecret
-
                         if (finalSecret == null) {
                             Log.e("ChatRepository", "Could not derive shared secret for incoming message from ${encMsg.senderId}. Message dropped.")
                             return@launch
                         }
 
-                        // 2. Decrypt it
                         val plaintext = KeyManager.decrypt(encMsg.ciphertext, encMsg.iv, finalSecret)
                         
+                        var contentStr = plaintext
+                        var urlStr: String? = null
+                        var keyStr: String? = null
+                        var ivStr: String? = null
+                        var typeStr: String? = null
+                        var nameStr: String? = null
+
+                        if (category == "media") {
+                            try {
+                                val json = org.json.JSONObject(plaintext)
+                                urlStr = json.optString("mediaUrl", null)
+                                keyStr = json.optString("mediaKey", null)
+                                ivStr = json.optString("mediaIv", null)
+                                typeStr = json.optString("mediaType", null)
+                                nameStr = json.optString("mediaFileName", null)
+                                contentStr = "[$typeStr]"
+                            } catch (e: Exception) {
+                                contentStr = "[Corrupted Media]"
+                            }
+                        }
+
                         val entity = MessageEntity(
                             messageId = encMsg.messageId,
                             senderId = encMsg.senderId,
                             receiverId = encMsg.receiverId,
-                            content = plaintext,
+                            content = contentStr,
                             timestamp = encMsg.timestamp,
-                            isSentByMe = false
+                            isSentByMe = false,
+                            mediaUrl = urlStr,
+                            mediaKey = keyStr,
+                            mediaIv = ivStr,
+                            mediaType = typeStr,
+                            mediaFileName = nameStr
                         )
 
-                        // 3. Save Message Locally FIRST so the UI updates instantly
                         chatDao.insertMessage(entity)
 
-                        // 4. Contact Sync: If sender is not in our local DB, fetch their profile and save them asynchronously
                         if (chatDao.getUserById(encMsg.senderId) == null) {
                             try {
                                 val senderProfile = rtdb.child("users").child(encMsg.senderId).get().await()
@@ -252,12 +380,9 @@ class ChatRepository(
                         }
 
                     } catch (e: Exception) {
-                        // Guardrail 6: decryption failure (e.g., they encrypted with an old public key)
                         val err = ErrorHandler.classify(e)
                         Log.e("ChatRepository", "Decryption/Persist error from ${encMsg.senderId}: ${ErrorHandler.userMessage(err)}", e)
                     } finally {
-                        // ── EPHEMERAL STORAGE (PULL & DELETE) ──
-                        // Delete instantly even if decryption fails, preventing infinite crash loops.
                         snapshot.ref.removeValue()
                             .addOnSuccessListener { Log.d("ChatRepository", "Inbox msg ${encMsg.messageId} popped from server.") }
                             .addOnFailureListener { e -> Log.e("ChatRepository", "Failed to delete inbox message", e) }
@@ -272,26 +397,33 @@ class ChatRepository(
             override fun onCancelled(error: DatabaseError) {
                 val msg = when (error.code) {
                     DatabaseError.PERMISSION_DENIED -> "⛔ Database permission denied."
-                    DatabaseError.NETWORK_ERROR -> "📡 Network error — messages will resume when reconnected."
-                    DatabaseError.DISCONNECTED -> "🔌 Disconnected from server. Reconnecting…"
-                    DatabaseError.EXPIRED_TOKEN -> "🔑 Auth token expired. Please log in again."
+                    DatabaseError.NETWORK_ERROR -> "📡 Network error."
+                    DatabaseError.DISCONNECTED -> "🔌 Disconnected from server."
+                    DatabaseError.EXPIRED_TOKEN -> "🔑 Auth token expired."
                     else -> "Database error (${error.code})"
                 }
                 _errorMessage.value = msg
-                Log.e("ChatRepository", "Global Inbox listener cancelled: ${error.message}")
             }
         }
+    }
 
-        rtdb.child("user_inboxes").child(currentUserId).addChildEventListener(messageListener!!)
-        Log.d("ChatRepository", "Global inbox listener started for $currentUserId")
+    fun startGlobalListener() {
+        if (textListener != null && imageListener != null) return
+
+        textListener = createInboxListener("texts")
+        imageListener = createInboxListener("media")
+
+        rtdb.child("user_inboxes").child(currentUserId).child("texts").addChildEventListener(textListener!!)
+        rtdb.child("user_inboxes").child(currentUserId).child("media").addChildEventListener(imageListener!!)
+        Log.d("ChatRepository", "Global categorized inbox listeners started for $currentUserId")
     }
 
     fun stopListening() {
-        messageListener?.let {
-            rtdb.child("user_inboxes").child(currentUserId).removeEventListener(it)
-        }
-        messageListener = null
-        Log.d("ChatRepository", "Global inbox listener stopped")
+        textListener?.let { rtdb.child("user_inboxes").child(currentUserId).child("texts").removeEventListener(it) }
+        imageListener?.let { rtdb.child("user_inboxes").child(currentUserId).child("media").removeEventListener(it) }
+        textListener = null
+        imageListener = null
+        Log.d("ChatRepository", "Global inbox listeners stopped")
     }
 
     fun clearError() { _errorMessage.value = null }
@@ -300,10 +432,14 @@ class ChatRepository(
 // Extension functions
 fun MessageEntity.toDomainModel() = Message(
     messageId = messageId, senderId = senderId, receiverId = receiverId,
-    content = content, timestamp = timestamp, isSentByMe = isSentByMe, isRead = isRead
+    content = content, timestamp = timestamp, isSentByMe = isSentByMe, isRead = isRead,
+    mediaUrl = mediaUrl, mediaKey = mediaKey, mediaIv = mediaIv,
+    mediaType = mediaType, mediaFileName = mediaFileName
 )
 
 fun Message.toEntity() = MessageEntity(
     messageId = messageId, senderId = senderId, receiverId = receiverId,
-    content = content, timestamp = timestamp, isSentByMe = isSentByMe, isRead = isRead
+    content = content, timestamp = timestamp, isSentByMe = isSentByMe, isRead = isRead,
+    mediaUrl = mediaUrl, mediaKey = mediaKey, mediaIv = mediaIv,
+    mediaType = mediaType, mediaFileName = mediaFileName
 )

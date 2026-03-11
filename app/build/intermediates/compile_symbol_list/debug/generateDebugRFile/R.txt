@@ -20,3 +20,4 @@ int string project_id 0x0
 int style Theme_ChatApp 0x0
 int xml backup_rules 0x0
 int xml data_extraction_rules 0x0
+int xml file_paths 0x0

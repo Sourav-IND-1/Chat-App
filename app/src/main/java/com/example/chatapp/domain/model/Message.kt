@@ -10,5 +10,12 @@ data class Message(
     val isRead: Boolean = false,
     // Fields for End-to-End Encryption
     val iv: String = "",
-    val ephemeralPublicKey: String? = null
+    val ephemeralPublicKey: String? = null,
+    
+    // Cloudinary E2EE Media Support
+    val mediaUrl: String? = null,
+    val mediaKey: String? = null,
+    val mediaIv: String? = null,
+    val mediaType: String? = null,
+    val mediaFileName: String? = null
 )

@@ -11,6 +11,7 @@ import androidx.room.RoomSQLiteQuery;
 import androidx.room.SharedSQLiteStatement;
 import androidx.room.util.CursorUtil;
 import androidx.room.util.DBUtil;
+import androidx.room.util.StringUtil;
 import androidx.sqlite.db.SupportSQLiteStatement;
 import java.lang.Class;
 import java.lang.Exception;
@@ -18,6 +19,7 @@ import java.lang.Integer;
 import java.lang.Object;
 import java.lang.Override;
 import java.lang.String;
+import java.lang.StringBuilder;
 import java.lang.SuppressWarnings;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,6 +39,10 @@ public final class ChatDao_Impl implements ChatDao {
   private final EntityInsertionAdapter<MessageEntity> __insertionAdapterOfMessageEntity;
 
   private final SharedSQLiteStatement __preparedStmtOfMarkMessagesAsRead;
+
+  private final SharedSQLiteStatement __preparedStmtOfClearMessagesWithUser;
+
+  private final SharedSQLiteStatement __preparedStmtOfDeleteUser;
 
   public ChatDao_Impl(@NonNull final RoomDatabase __db) {
     this.__db = __db;
@@ -68,7 +74,7 @@ public final class ChatDao_Impl implements ChatDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR REPLACE INTO `messages` (`messageId`,`senderId`,`receiverId`,`content`,`timestamp`,`isSentByMe`,`isRead`) VALUES (?,?,?,?,?,?,?)";
+        return "INSERT OR REPLACE INTO `messages` (`messageId`,`senderId`,`receiverId`,`content`,`timestamp`,`isSentByMe`,`isRead`,`mediaUrl`,`mediaKey`,`mediaIv`,`mediaType`,`mediaFileName`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
       }
 
       @Override
@@ -83,6 +89,31 @@ public final class ChatDao_Impl implements ChatDao {
         statement.bindLong(6, _tmp);
         final int _tmp_1 = entity.isRead() ? 1 : 0;
         statement.bindLong(7, _tmp_1);
+        if (entity.getMediaUrl() == null) {
+          statement.bindNull(8);
+        } else {
+          statement.bindString(8, entity.getMediaUrl());
+        }
+        if (entity.getMediaKey() == null) {
+          statement.bindNull(9);
+        } else {
+          statement.bindString(9, entity.getMediaKey());
+        }
+        if (entity.getMediaIv() == null) {
+          statement.bindNull(10);
+        } else {
+          statement.bindString(10, entity.getMediaIv());
+        }
+        if (entity.getMediaType() == null) {
+          statement.bindNull(11);
+        } else {
+          statement.bindString(11, entity.getMediaType());
+        }
+        if (entity.getMediaFileName() == null) {
+          statement.bindNull(12);
+        } else {
+          statement.bindString(12, entity.getMediaFileName());
+        }
       }
     };
     this.__preparedStmtOfMarkMessagesAsRead = new SharedSQLiteStatement(__db) {
@@ -90,6 +121,22 @@ public final class ChatDao_Impl implements ChatDao {
       @NonNull
       public String createQuery() {
         final String _query = "UPDATE messages SET isRead = 1 WHERE senderId = ? AND receiverId = ?";
+        return _query;
+      }
+    };
+    this.__preparedStmtOfClearMessagesWithUser = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "DELETE FROM messages WHERE (senderId = ? AND receiverId = ?) OR (senderId = ? AND receiverId = ?)";
+        return _query;
+      }
+    };
+    this.__preparedStmtOfDeleteUser = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "DELETE FROM users WHERE userId = ?";
         return _query;
       }
     };
@@ -139,6 +186,50 @@ public final class ChatDao_Impl implements ChatDao {
       }
     } finally {
       __preparedStmtOfMarkMessagesAsRead.release(_stmt);
+    }
+  }
+
+  @Override
+  public void clearMessagesWithUser(final String myUserId, final String otherUserId) {
+    __db.assertNotSuspendingTransaction();
+    final SupportSQLiteStatement _stmt = __preparedStmtOfClearMessagesWithUser.acquire();
+    int _argIndex = 1;
+    _stmt.bindString(_argIndex, myUserId);
+    _argIndex = 2;
+    _stmt.bindString(_argIndex, otherUserId);
+    _argIndex = 3;
+    _stmt.bindString(_argIndex, otherUserId);
+    _argIndex = 4;
+    _stmt.bindString(_argIndex, myUserId);
+    try {
+      __db.beginTransaction();
+      try {
+        _stmt.executeUpdateDelete();
+        __db.setTransactionSuccessful();
+      } finally {
+        __db.endTransaction();
+      }
+    } finally {
+      __preparedStmtOfClearMessagesWithUser.release(_stmt);
+    }
+  }
+
+  @Override
+  public void deleteUser(final String userId) {
+    __db.assertNotSuspendingTransaction();
+    final SupportSQLiteStatement _stmt = __preparedStmtOfDeleteUser.acquire();
+    int _argIndex = 1;
+    _stmt.bindString(_argIndex, userId);
+    try {
+      __db.beginTransaction();
+      try {
+        _stmt.executeUpdateDelete();
+        __db.setTransactionSuccessful();
+      } finally {
+        __db.endTransaction();
+      }
+    } finally {
+      __preparedStmtOfDeleteUser.release(_stmt);
     }
   }
 
@@ -395,6 +486,11 @@ public final class ChatDao_Impl implements ChatDao {
           final int _cursorIndexOfTimestamp = CursorUtil.getColumnIndexOrThrow(_cursor, "timestamp");
           final int _cursorIndexOfIsSentByMe = CursorUtil.getColumnIndexOrThrow(_cursor, "isSentByMe");
           final int _cursorIndexOfIsRead = CursorUtil.getColumnIndexOrThrow(_cursor, "isRead");
+          final int _cursorIndexOfMediaUrl = CursorUtil.getColumnIndexOrThrow(_cursor, "mediaUrl");
+          final int _cursorIndexOfMediaKey = CursorUtil.getColumnIndexOrThrow(_cursor, "mediaKey");
+          final int _cursorIndexOfMediaIv = CursorUtil.getColumnIndexOrThrow(_cursor, "mediaIv");
+          final int _cursorIndexOfMediaType = CursorUtil.getColumnIndexOrThrow(_cursor, "mediaType");
+          final int _cursorIndexOfMediaFileName = CursorUtil.getColumnIndexOrThrow(_cursor, "mediaFileName");
           final List<MessageEntity> _result = new ArrayList<MessageEntity>(_cursor.getCount());
           while (_cursor.moveToNext()) {
             final MessageEntity _item;
@@ -416,7 +512,37 @@ public final class ChatDao_Impl implements ChatDao {
             final int _tmp_1;
             _tmp_1 = _cursor.getInt(_cursorIndexOfIsRead);
             _tmpIsRead = _tmp_1 != 0;
-            _item = new MessageEntity(_tmpMessageId,_tmpSenderId,_tmpReceiverId,_tmpContent,_tmpTimestamp,_tmpIsSentByMe,_tmpIsRead);
+            final String _tmpMediaUrl;
+            if (_cursor.isNull(_cursorIndexOfMediaUrl)) {
+              _tmpMediaUrl = null;
+            } else {
+              _tmpMediaUrl = _cursor.getString(_cursorIndexOfMediaUrl);
+            }
+            final String _tmpMediaKey;
+            if (_cursor.isNull(_cursorIndexOfMediaKey)) {
+              _tmpMediaKey = null;
+            } else {
+              _tmpMediaKey = _cursor.getString(_cursorIndexOfMediaKey);
+            }
+            final String _tmpMediaIv;
+            if (_cursor.isNull(_cursorIndexOfMediaIv)) {
+              _tmpMediaIv = null;
+            } else {
+              _tmpMediaIv = _cursor.getString(_cursorIndexOfMediaIv);
+            }
+            final String _tmpMediaType;
+            if (_cursor.isNull(_cursorIndexOfMediaType)) {
+              _tmpMediaType = null;
+            } else {
+              _tmpMediaType = _cursor.getString(_cursorIndexOfMediaType);
+            }
+            final String _tmpMediaFileName;
+            if (_cursor.isNull(_cursorIndexOfMediaFileName)) {
+              _tmpMediaFileName = null;
+            } else {
+              _tmpMediaFileName = _cursor.getString(_cursorIndexOfMediaFileName);
+            }
+            _item = new MessageEntity(_tmpMessageId,_tmpSenderId,_tmpReceiverId,_tmpContent,_tmpTimestamp,_tmpIsSentByMe,_tmpIsRead,_tmpMediaUrl,_tmpMediaKey,_tmpMediaIv,_tmpMediaType,_tmpMediaFileName);
             _result.add(_item);
           }
           return _result;
@@ -458,6 +584,11 @@ public final class ChatDao_Impl implements ChatDao {
           final int _cursorIndexOfTimestamp = CursorUtil.getColumnIndexOrThrow(_cursor, "timestamp");
           final int _cursorIndexOfIsSentByMe = CursorUtil.getColumnIndexOrThrow(_cursor, "isSentByMe");
           final int _cursorIndexOfIsRead = CursorUtil.getColumnIndexOrThrow(_cursor, "isRead");
+          final int _cursorIndexOfMediaUrl = CursorUtil.getColumnIndexOrThrow(_cursor, "mediaUrl");
+          final int _cursorIndexOfMediaKey = CursorUtil.getColumnIndexOrThrow(_cursor, "mediaKey");
+          final int _cursorIndexOfMediaIv = CursorUtil.getColumnIndexOrThrow(_cursor, "mediaIv");
+          final int _cursorIndexOfMediaType = CursorUtil.getColumnIndexOrThrow(_cursor, "mediaType");
+          final int _cursorIndexOfMediaFileName = CursorUtil.getColumnIndexOrThrow(_cursor, "mediaFileName");
           final MessageEntity _result;
           if (_cursor.moveToFirst()) {
             final String _tmpMessageId;
@@ -478,7 +609,37 @@ public final class ChatDao_Impl implements ChatDao {
             final int _tmp_1;
             _tmp_1 = _cursor.getInt(_cursorIndexOfIsRead);
             _tmpIsRead = _tmp_1 != 0;
-            _result = new MessageEntity(_tmpMessageId,_tmpSenderId,_tmpReceiverId,_tmpContent,_tmpTimestamp,_tmpIsSentByMe,_tmpIsRead);
+            final String _tmpMediaUrl;
+            if (_cursor.isNull(_cursorIndexOfMediaUrl)) {
+              _tmpMediaUrl = null;
+            } else {
+              _tmpMediaUrl = _cursor.getString(_cursorIndexOfMediaUrl);
+            }
+            final String _tmpMediaKey;
+            if (_cursor.isNull(_cursorIndexOfMediaKey)) {
+              _tmpMediaKey = null;
+            } else {
+              _tmpMediaKey = _cursor.getString(_cursorIndexOfMediaKey);
+            }
+            final String _tmpMediaIv;
+            if (_cursor.isNull(_cursorIndexOfMediaIv)) {
+              _tmpMediaIv = null;
+            } else {
+              _tmpMediaIv = _cursor.getString(_cursorIndexOfMediaIv);
+            }
+            final String _tmpMediaType;
+            if (_cursor.isNull(_cursorIndexOfMediaType)) {
+              _tmpMediaType = null;
+            } else {
+              _tmpMediaType = _cursor.getString(_cursorIndexOfMediaType);
+            }
+            final String _tmpMediaFileName;
+            if (_cursor.isNull(_cursorIndexOfMediaFileName)) {
+              _tmpMediaFileName = null;
+            } else {
+              _tmpMediaFileName = _cursor.getString(_cursorIndexOfMediaFileName);
+            }
+            _result = new MessageEntity(_tmpMessageId,_tmpSenderId,_tmpReceiverId,_tmpContent,_tmpTimestamp,_tmpIsSentByMe,_tmpIsRead,_tmpMediaUrl,_tmpMediaKey,_tmpMediaIv,_tmpMediaType,_tmpMediaFileName);
           } else {
             _result = null;
           }
@@ -512,6 +673,11 @@ public final class ChatDao_Impl implements ChatDao {
           final int _cursorIndexOfTimestamp = CursorUtil.getColumnIndexOrThrow(_cursor, "timestamp");
           final int _cursorIndexOfIsSentByMe = CursorUtil.getColumnIndexOrThrow(_cursor, "isSentByMe");
           final int _cursorIndexOfIsRead = CursorUtil.getColumnIndexOrThrow(_cursor, "isRead");
+          final int _cursorIndexOfMediaUrl = CursorUtil.getColumnIndexOrThrow(_cursor, "mediaUrl");
+          final int _cursorIndexOfMediaKey = CursorUtil.getColumnIndexOrThrow(_cursor, "mediaKey");
+          final int _cursorIndexOfMediaIv = CursorUtil.getColumnIndexOrThrow(_cursor, "mediaIv");
+          final int _cursorIndexOfMediaType = CursorUtil.getColumnIndexOrThrow(_cursor, "mediaType");
+          final int _cursorIndexOfMediaFileName = CursorUtil.getColumnIndexOrThrow(_cursor, "mediaFileName");
           final MessageEntity _result;
           if (_cursor.moveToFirst()) {
             final String _tmpMessageId;
@@ -532,7 +698,37 @@ public final class ChatDao_Impl implements ChatDao {
             final int _tmp_1;
             _tmp_1 = _cursor.getInt(_cursorIndexOfIsRead);
             _tmpIsRead = _tmp_1 != 0;
-            _result = new MessageEntity(_tmpMessageId,_tmpSenderId,_tmpReceiverId,_tmpContent,_tmpTimestamp,_tmpIsSentByMe,_tmpIsRead);
+            final String _tmpMediaUrl;
+            if (_cursor.isNull(_cursorIndexOfMediaUrl)) {
+              _tmpMediaUrl = null;
+            } else {
+              _tmpMediaUrl = _cursor.getString(_cursorIndexOfMediaUrl);
+            }
+            final String _tmpMediaKey;
+            if (_cursor.isNull(_cursorIndexOfMediaKey)) {
+              _tmpMediaKey = null;
+            } else {
+              _tmpMediaKey = _cursor.getString(_cursorIndexOfMediaKey);
+            }
+            final String _tmpMediaIv;
+            if (_cursor.isNull(_cursorIndexOfMediaIv)) {
+              _tmpMediaIv = null;
+            } else {
+              _tmpMediaIv = _cursor.getString(_cursorIndexOfMediaIv);
+            }
+            final String _tmpMediaType;
+            if (_cursor.isNull(_cursorIndexOfMediaType)) {
+              _tmpMediaType = null;
+            } else {
+              _tmpMediaType = _cursor.getString(_cursorIndexOfMediaType);
+            }
+            final String _tmpMediaFileName;
+            if (_cursor.isNull(_cursorIndexOfMediaFileName)) {
+              _tmpMediaFileName = null;
+            } else {
+              _tmpMediaFileName = _cursor.getString(_cursorIndexOfMediaFileName);
+            }
+            _result = new MessageEntity(_tmpMessageId,_tmpSenderId,_tmpReceiverId,_tmpContent,_tmpTimestamp,_tmpIsSentByMe,_tmpIsRead,_tmpMediaUrl,_tmpMediaKey,_tmpMediaIv,_tmpMediaType,_tmpMediaFileName);
           } else {
             _result = null;
           }
@@ -547,6 +743,121 @@ public final class ChatDao_Impl implements ChatDao {
         _statement.release();
       }
     });
+  }
+
+  @Override
+  public List<MessageEntity> getMessagesByIds(final List<String> messageIds) {
+    final StringBuilder _stringBuilder = StringUtil.newStringBuilder();
+    _stringBuilder.append("SELECT * FROM messages WHERE messageId IN (");
+    final int _inputSize = messageIds.size();
+    StringUtil.appendPlaceholders(_stringBuilder, _inputSize);
+    _stringBuilder.append(")");
+    final String _sql = _stringBuilder.toString();
+    final int _argCount = 0 + _inputSize;
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, _argCount);
+    int _argIndex = 1;
+    for (String _item : messageIds) {
+      _statement.bindString(_argIndex, _item);
+      _argIndex++;
+    }
+    __db.assertNotSuspendingTransaction();
+    final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+    try {
+      final int _cursorIndexOfMessageId = CursorUtil.getColumnIndexOrThrow(_cursor, "messageId");
+      final int _cursorIndexOfSenderId = CursorUtil.getColumnIndexOrThrow(_cursor, "senderId");
+      final int _cursorIndexOfReceiverId = CursorUtil.getColumnIndexOrThrow(_cursor, "receiverId");
+      final int _cursorIndexOfContent = CursorUtil.getColumnIndexOrThrow(_cursor, "content");
+      final int _cursorIndexOfTimestamp = CursorUtil.getColumnIndexOrThrow(_cursor, "timestamp");
+      final int _cursorIndexOfIsSentByMe = CursorUtil.getColumnIndexOrThrow(_cursor, "isSentByMe");
+      final int _cursorIndexOfIsRead = CursorUtil.getColumnIndexOrThrow(_cursor, "isRead");
+      final int _cursorIndexOfMediaUrl = CursorUtil.getColumnIndexOrThrow(_cursor, "mediaUrl");
+      final int _cursorIndexOfMediaKey = CursorUtil.getColumnIndexOrThrow(_cursor, "mediaKey");
+      final int _cursorIndexOfMediaIv = CursorUtil.getColumnIndexOrThrow(_cursor, "mediaIv");
+      final int _cursorIndexOfMediaType = CursorUtil.getColumnIndexOrThrow(_cursor, "mediaType");
+      final int _cursorIndexOfMediaFileName = CursorUtil.getColumnIndexOrThrow(_cursor, "mediaFileName");
+      final List<MessageEntity> _result = new ArrayList<MessageEntity>(_cursor.getCount());
+      while (_cursor.moveToNext()) {
+        final MessageEntity _item_1;
+        final String _tmpMessageId;
+        _tmpMessageId = _cursor.getString(_cursorIndexOfMessageId);
+        final String _tmpSenderId;
+        _tmpSenderId = _cursor.getString(_cursorIndexOfSenderId);
+        final String _tmpReceiverId;
+        _tmpReceiverId = _cursor.getString(_cursorIndexOfReceiverId);
+        final String _tmpContent;
+        _tmpContent = _cursor.getString(_cursorIndexOfContent);
+        final long _tmpTimestamp;
+        _tmpTimestamp = _cursor.getLong(_cursorIndexOfTimestamp);
+        final boolean _tmpIsSentByMe;
+        final int _tmp;
+        _tmp = _cursor.getInt(_cursorIndexOfIsSentByMe);
+        _tmpIsSentByMe = _tmp != 0;
+        final boolean _tmpIsRead;
+        final int _tmp_1;
+        _tmp_1 = _cursor.getInt(_cursorIndexOfIsRead);
+        _tmpIsRead = _tmp_1 != 0;
+        final String _tmpMediaUrl;
+        if (_cursor.isNull(_cursorIndexOfMediaUrl)) {
+          _tmpMediaUrl = null;
+        } else {
+          _tmpMediaUrl = _cursor.getString(_cursorIndexOfMediaUrl);
+        }
+        final String _tmpMediaKey;
+        if (_cursor.isNull(_cursorIndexOfMediaKey)) {
+          _tmpMediaKey = null;
+        } else {
+          _tmpMediaKey = _cursor.getString(_cursorIndexOfMediaKey);
+        }
+        final String _tmpMediaIv;
+        if (_cursor.isNull(_cursorIndexOfMediaIv)) {
+          _tmpMediaIv = null;
+        } else {
+          _tmpMediaIv = _cursor.getString(_cursorIndexOfMediaIv);
+        }
+        final String _tmpMediaType;
+        if (_cursor.isNull(_cursorIndexOfMediaType)) {
+          _tmpMediaType = null;
+        } else {
+          _tmpMediaType = _cursor.getString(_cursorIndexOfMediaType);
+        }
+        final String _tmpMediaFileName;
+        if (_cursor.isNull(_cursorIndexOfMediaFileName)) {
+          _tmpMediaFileName = null;
+        } else {
+          _tmpMediaFileName = _cursor.getString(_cursorIndexOfMediaFileName);
+        }
+        _item_1 = new MessageEntity(_tmpMessageId,_tmpSenderId,_tmpReceiverId,_tmpContent,_tmpTimestamp,_tmpIsSentByMe,_tmpIsRead,_tmpMediaUrl,_tmpMediaKey,_tmpMediaIv,_tmpMediaType,_tmpMediaFileName);
+        _result.add(_item_1);
+      }
+      return _result;
+    } finally {
+      _cursor.close();
+      _statement.release();
+    }
+  }
+
+  @Override
+  public void deleteMessages(final List<String> messageIds) {
+    __db.assertNotSuspendingTransaction();
+    final StringBuilder _stringBuilder = StringUtil.newStringBuilder();
+    _stringBuilder.append("DELETE FROM messages WHERE messageId IN (");
+    final int _inputSize = messageIds.size();
+    StringUtil.appendPlaceholders(_stringBuilder, _inputSize);
+    _stringBuilder.append(")");
+    final String _sql = _stringBuilder.toString();
+    final SupportSQLiteStatement _stmt = __db.compileStatement(_sql);
+    int _argIndex = 1;
+    for (String _item : messageIds) {
+      _stmt.bindString(_argIndex, _item);
+      _argIndex++;
+    }
+    __db.beginTransaction();
+    try {
+      _stmt.executeUpdateDelete();
+      __db.setTransactionSuccessful();
+    } finally {
+      __db.endTransaction();
+    }
   }
 
   @NonNull

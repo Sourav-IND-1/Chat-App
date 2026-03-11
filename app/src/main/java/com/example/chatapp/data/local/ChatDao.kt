@@ -46,4 +46,16 @@ interface ChatDao {
 
     @Query("SELECT * FROM messages ORDER BY timestamp DESC LIMIT 1")
     fun getLastMessageFlow(): Flow<MessageEntity?>
+
+    @Query("DELETE FROM messages WHERE (senderId = :myUserId AND receiverId = :otherUserId) OR (senderId = :otherUserId AND receiverId = :myUserId)")
+    fun clearMessagesWithUser(myUserId: String, otherUserId: String)
+
+    @Query("SELECT * FROM messages WHERE messageId IN (:messageIds)")
+    fun getMessagesByIds(messageIds: List<String>): List<MessageEntity>
+
+    @Query("DELETE FROM messages WHERE messageId IN (:messageIds)")
+    fun deleteMessages(messageIds: List<String>)
+
+    @Query("DELETE FROM users WHERE userId = :userId")
+    fun deleteUser(userId: String)
 }

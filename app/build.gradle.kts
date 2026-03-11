@@ -65,6 +65,8 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation("androidx.compose.material:material-icons-extended:1.6.3")
+    implementation("androidx.documentfile:documentfile:1.0.1")
 
     // BOM 32.8.0 → firebase-auth:22.3.1 (no mandatory reCAPTCHA on sign-up)
     // firebase-auth 23.x+ requires reCAPTCHA Enterprise to be fully configured;
@@ -86,8 +88,9 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
     
-    // Image Loading
+    // Image Loading & Storage
     implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("com.cloudinary:cloudinary-android:2.5.0")
     
     // ViewModel & Coroutines
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
