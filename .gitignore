@@ -21,6 +21,7 @@ local.properties
 
 # Debug/log files
 *.txt
+*.log
 
 # Native build
 .externalNativeBuild/
