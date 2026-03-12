@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -103,7 +104,7 @@ fun HomeScreen(
     val currentUserId = remember { com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: "" }
 
     var selectedTab by remember { mutableIntStateOf(0) }
-    val tabs = listOf("Chats", "People")
+    val tabs = listOf("Chats", "People", "Groups")
 
     val selectedChats = remember { mutableStateListOf<String>() }
     val isSelectionMode = selectedChats.isNotEmpty()
@@ -204,6 +205,39 @@ fun HomeScreen(
                 }
             }
         },
+        floatingActionButton = {
+            if (selectedTab == 2) {
+                var expanded by remember { mutableStateOf(false) }
+                Box {
+                    FloatingActionButton(
+                        onClick = { expanded = true },
+                        containerColor = AppBlue,
+                        contentColor = Color.White
+                    ) {
+                        Icon(androidx.compose.material.icons.Icons.Default.Add, contentDescription = "Add Group")
+                    }
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Create Group") },
+                            onClick = {
+                                expanded = false
+                                navController.navigate(Screen.CreateGroup.route)
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Join Group") },
+                            onClick = {
+                                expanded = false
+                                navController.navigate(Screen.JoinGroup.route)
+                            }
+                        )
+                    }
+                }
+            }
+        },
         containerColor = Color.White
     ) { padding ->
         when (selectedTab) {
@@ -234,8 +268,14 @@ fun HomeScreen(
                 padding = padding,
                 localContacts = contacts.map { it.userId }.toSet(),
                 onPersonClick = { user ->
-                    val displayName = if (user.status == "Deleted Account") "${user.name} {DELETED}" else user.name
+                    val displayName = if (user.status == "Deleted Account") "${user.name} [DELETED]" else user.name
                     navController.navigate(Screen.Chat.createRoute(user.userId, displayName))
+                }
+            )
+            2 -> com.example.chatapp.ui.group.GroupsTab(
+                padding = padding,
+                onGroupClick = { groupId, name ->
+                    navController.navigate(Screen.GroupChat.createRoute(groupId, name))
                 }
             )
         }

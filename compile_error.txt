@@ -1,0 +1,43 @@
+
+> Configure project :app
+WARNING: The option setting 'android.disallowKotlinSourceSets=false' is experimental.
+The current default is 'true'.
+
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:generateDebugBuildConfig UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:processDebugGoogleServices UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:processDebugNavigationResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:generateDebugRFile UP-TO-DATE
+> Task :app:kspDebugKotlin UP-TO-DATE
+
+> Task :app:compileDebugKotlin
+e: file:///C:/Users/sm273/AndroidStudioProjects/ChatApp/app/src/main/java/com/example/chatapp/data/local/Converters.kt:4:19 Unresolved reference 'gson'.
+e: file:///C:/Users/sm273/AndroidStudioProjects/ChatApp/app/src/main/java/com/example/chatapp/data/local/Converters.kt:5:19 Unresolved reference 'gson'.
+e: file:///C:/Users/sm273/AndroidStudioProjects/ChatApp/app/src/main/java/com/example/chatapp/data/local/Converters.kt:10:20 Unresolved reference 'Gson'.
+e: file:///C:/Users/sm273/AndroidStudioProjects/ChatApp/app/src/main/java/com/example/chatapp/data/local/Converters.kt:11:29 Unresolved reference 'TypeToken'.
+e: file:///C:/Users/sm273/AndroidStudioProjects/ChatApp/app/src/main/java/com/example/chatapp/data/local/Converters.kt:11:58 Unresolved reference 'type'.
+e: file:///C:/Users/sm273/AndroidStudioProjects/ChatApp/app/src/main/java/com/example/chatapp/data/local/Converters.kt:17:20 Unresolved reference 'Gson'.
+e: file:///C:/Users/sm273/AndroidStudioProjects/ChatApp/app/src/main/java/com/example/chatapp/data/local/Converters.kt:18:29 Unresolved reference 'TypeToken'.
+e: file:///C:/Users/sm273/AndroidStudioProjects/ChatApp/app/src/main/java/com/example/chatapp/data/local/Converters.kt:18:58 Unresolved reference 'type'.
+
+> Task :app:compileDebugKotlin FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileDebugKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to generate a Build Scan (Powered by Develocity).
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 35s
+9 actionable tasks: 1 executed, 8 up-to-date
