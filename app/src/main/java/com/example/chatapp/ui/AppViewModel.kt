@@ -40,6 +40,9 @@ class AppViewModel : ViewModel() {
                     val db = com.example.chatapp.data.local.AppDatabase.getDatabase(context)
                     val chatRepo = com.example.chatapp.data.repository.ChatRepository(db.chatDao(), user.uid, context)
                     chatRepo.startGlobalListener()
+                    
+                    val groupRepo = com.example.chatapp.data.repository.GroupRepository(db.groupDao(), user.uid, context)
+                    groupRepo.startListeningToUserGroups()
                 }
             } else {
                 _isLoggedIn.value = false

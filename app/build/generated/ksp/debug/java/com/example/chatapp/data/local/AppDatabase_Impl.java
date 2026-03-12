@@ -28,22 +28,28 @@ import javax.annotation.processing.Generated;
 public final class AppDatabase_Impl extends AppDatabase {
   private volatile ChatDao _chatDao;
 
+  private volatile GroupDao _groupDao;
+
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(4) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(5) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS `users` (`userId` TEXT NOT NULL, `name` TEXT NOT NULL, `profilePhotoUrl` TEXT, `status` TEXT, PRIMARY KEY(`userId`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `messages` (`messageId` TEXT NOT NULL, `senderId` TEXT NOT NULL, `receiverId` TEXT NOT NULL, `content` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `isSentByMe` INTEGER NOT NULL, `isRead` INTEGER NOT NULL, `mediaUrl` TEXT, `mediaKey` TEXT, `mediaIv` TEXT, `mediaType` TEXT, `mediaFileName` TEXT, PRIMARY KEY(`messageId`))");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `groups` (`groupId` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `profilePhotoUrl` TEXT, `adminId` TEXT NOT NULL, `members` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`groupId`))");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `group_messages` (`messageId` TEXT NOT NULL, `groupId` TEXT NOT NULL, `senderId` TEXT NOT NULL, `senderName` TEXT NOT NULL, `content` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `isSentByMe` INTEGER NOT NULL, `mediaUrl` TEXT, `mediaType` TEXT, `isPoll` INTEGER NOT NULL, `pollId` TEXT, `pollQuestion` TEXT, `pollOptionsJson` TEXT, `userVotedOption` TEXT, PRIMARY KEY(`messageId`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6ee35d5314931a94d805109d1a34f505')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cac91e1d8ab3f034f85060abcbce258a')");
       }
 
       @Override
       public void dropAllTables(@NonNull final SupportSQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS `users`");
         db.execSQL("DROP TABLE IF EXISTS `messages`");
+        db.execSQL("DROP TABLE IF EXISTS `groups`");
+        db.execSQL("DROP TABLE IF EXISTS `group_messages`");
         final List<? extends RoomDatabase.Callback> _callbacks = mCallbacks;
         if (_callbacks != null) {
           for (RoomDatabase.Callback _callback : _callbacks) {
@@ -123,9 +129,50 @@ public final class AppDatabase_Impl extends AppDatabase {
                   + " Expected:\n" + _infoMessages + "\n"
                   + " Found:\n" + _existingMessages);
         }
+        final HashMap<String, TableInfo.Column> _columnsGroups = new HashMap<String, TableInfo.Column>(7);
+        _columnsGroups.put("groupId", new TableInfo.Column("groupId", "TEXT", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsGroups.put("name", new TableInfo.Column("name", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsGroups.put("description", new TableInfo.Column("description", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsGroups.put("profilePhotoUrl", new TableInfo.Column("profilePhotoUrl", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsGroups.put("adminId", new TableInfo.Column("adminId", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsGroups.put("members", new TableInfo.Column("members", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsGroups.put("createdAt", new TableInfo.Column("createdAt", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        final HashSet<TableInfo.ForeignKey> _foreignKeysGroups = new HashSet<TableInfo.ForeignKey>(0);
+        final HashSet<TableInfo.Index> _indicesGroups = new HashSet<TableInfo.Index>(0);
+        final TableInfo _infoGroups = new TableInfo("groups", _columnsGroups, _foreignKeysGroups, _indicesGroups);
+        final TableInfo _existingGroups = TableInfo.read(db, "groups");
+        if (!_infoGroups.equals(_existingGroups)) {
+          return new RoomOpenHelper.ValidationResult(false, "groups(com.example.chatapp.data.local.GroupEntity).\n"
+                  + " Expected:\n" + _infoGroups + "\n"
+                  + " Found:\n" + _existingGroups);
+        }
+        final HashMap<String, TableInfo.Column> _columnsGroupMessages = new HashMap<String, TableInfo.Column>(14);
+        _columnsGroupMessages.put("messageId", new TableInfo.Column("messageId", "TEXT", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsGroupMessages.put("groupId", new TableInfo.Column("groupId", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsGroupMessages.put("senderId", new TableInfo.Column("senderId", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsGroupMessages.put("senderName", new TableInfo.Column("senderName", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsGroupMessages.put("content", new TableInfo.Column("content", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsGroupMessages.put("timestamp", new TableInfo.Column("timestamp", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsGroupMessages.put("isSentByMe", new TableInfo.Column("isSentByMe", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsGroupMessages.put("mediaUrl", new TableInfo.Column("mediaUrl", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsGroupMessages.put("mediaType", new TableInfo.Column("mediaType", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsGroupMessages.put("isPoll", new TableInfo.Column("isPoll", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsGroupMessages.put("pollId", new TableInfo.Column("pollId", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsGroupMessages.put("pollQuestion", new TableInfo.Column("pollQuestion", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsGroupMessages.put("pollOptionsJson", new TableInfo.Column("pollOptionsJson", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsGroupMessages.put("userVotedOption", new TableInfo.Column("userVotedOption", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        final HashSet<TableInfo.ForeignKey> _foreignKeysGroupMessages = new HashSet<TableInfo.ForeignKey>(0);
+        final HashSet<TableInfo.Index> _indicesGroupMessages = new HashSet<TableInfo.Index>(0);
+        final TableInfo _infoGroupMessages = new TableInfo("group_messages", _columnsGroupMessages, _foreignKeysGroupMessages, _indicesGroupMessages);
+        final TableInfo _existingGroupMessages = TableInfo.read(db, "group_messages");
+        if (!_infoGroupMessages.equals(_existingGroupMessages)) {
+          return new RoomOpenHelper.ValidationResult(false, "group_messages(com.example.chatapp.data.local.GroupMessageEntity).\n"
+                  + " Expected:\n" + _infoGroupMessages + "\n"
+                  + " Found:\n" + _existingGroupMessages);
+        }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "6ee35d5314931a94d805109d1a34f505", "0707887adc40a7ea6251819c54f58cab");
+    }, "cac91e1d8ab3f034f85060abcbce258a", "c21a5800ecfdf6e55416999a6ec24882");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;
@@ -136,7 +183,7 @@ public final class AppDatabase_Impl extends AppDatabase {
   protected InvalidationTracker createInvalidationTracker() {
     final HashMap<String, String> _shadowTablesMap = new HashMap<String, String>(0);
     final HashMap<String, Set<String>> _viewTables = new HashMap<String, Set<String>>(0);
-    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "users","messages");
+    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "users","messages","groups","group_messages");
   }
 
   @Override
@@ -147,6 +194,8 @@ public final class AppDatabase_Impl extends AppDatabase {
       super.beginTransaction();
       _db.execSQL("DELETE FROM `users`");
       _db.execSQL("DELETE FROM `messages`");
+      _db.execSQL("DELETE FROM `groups`");
+      _db.execSQL("DELETE FROM `group_messages`");
       super.setTransactionSuccessful();
     } finally {
       super.endTransaction();
@@ -162,6 +211,7 @@ public final class AppDatabase_Impl extends AppDatabase {
   protected Map<Class<?>, List<Class<?>>> getRequiredTypeConverters() {
     final HashMap<Class<?>, List<Class<?>>> _typeConvertersMap = new HashMap<Class<?>, List<Class<?>>>();
     _typeConvertersMap.put(ChatDao.class, ChatDao_Impl.getRequiredConverters());
+    _typeConvertersMap.put(GroupDao.class, GroupDao_Impl.getRequiredConverters());
     return _typeConvertersMap;
   }
 
@@ -190,6 +240,20 @@ public final class AppDatabase_Impl extends AppDatabase {
           _chatDao = new ChatDao_Impl(this);
         }
         return _chatDao;
+      }
+    }
+  }
+
+  @Override
+  public GroupDao groupDao() {
+    if (_groupDao != null) {
+      return _groupDao;
+    } else {
+      synchronized(this) {
+        if(_groupDao == null) {
+          _groupDao = new GroupDao_Impl(this);
+        }
+        return _groupDao;
       }
     }
   }

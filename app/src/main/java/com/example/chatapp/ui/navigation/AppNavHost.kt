@@ -65,5 +65,16 @@ fun AppNavHost(
             val userName = backStackEntry.arguments?.getString("userName") ?: ""
             ChatScreen(navController, userId, userName)
         }
+        composable(Screen.CreateGroup.route) {
+            com.example.chatapp.ui.group.CreateGroupScreen(navController)
+        }
+        composable(Screen.JoinGroup.route) {
+            com.example.chatapp.ui.group.JoinGroupScreen(navController)
+        }
+        composable(Screen.GroupChat.route) { backStackEntry ->
+            val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
+            val groupName = backStackEntry.arguments?.getString("groupName") ?: ""
+            com.example.chatapp.ui.group.GroupChatScreen(navController, groupId, groupName)
+        }
     }
 }
