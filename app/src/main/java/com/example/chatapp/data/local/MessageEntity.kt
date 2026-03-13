@@ -11,5 +11,19 @@ data class MessageEntity(
     val receiverId: String,
     val content: String,
     val timestamp: Long,
-    val isSentByMe: Boolean
+    val isSentByMe: Boolean,
+    val isRead: Boolean = false,
+    
+    // Cloudinary E2EE Media Support
+    val mediaUrl: String? = null,
+    val mediaKey: String? = null,
+    val mediaIv: String? = null,
+    val mediaType: String? = null,
+    val mediaFileName: String? = null,
+
+    // Group Invites
+    val isGroupInvite: Boolean = false,
+    val inviteGroupId: String? = null,
+    val inviteGroupName: String? = null,
+    val inviteStatus: String = "UNSENT"
 )

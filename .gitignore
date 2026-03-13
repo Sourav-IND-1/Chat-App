@@ -1,15 +1,34 @@
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+# Local machine config — never commit
 local.properties
+!local.properties.example
+
+# Build outputs
+/build/
+/app/build/
+*.ap_
+
+# Gradle caches
+.gradle/
+
+# IDE files
+.idea/
+.kotlin/
+.vscode/
+*.iml
+
+# macOS
+.DS_Store
+
+# Debug/log files
+*.txt
+*.log
+
+# Native build
+.externalNativeBuild/
+.cxx/
+/captures/
+
+# Python Virtual Environments
+.venv/
+venv/
+env/

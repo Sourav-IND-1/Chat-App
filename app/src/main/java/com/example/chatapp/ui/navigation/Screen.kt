@@ -1,12 +1,16 @@
 package com.example.chatapp.ui.navigation
 
 sealed class Screen(val route: String) {
-    object Login : Screen("login")
     object Register : Screen("register")
     object Home : Screen("home")
     object Search : Screen("search")
     object Profile : Screen("profile")
     object Chat : Screen("chat/{userId}/{userName}") {
         fun createRoute(userId: String, userName: String) = "chat/$userId/$userName"
+    }
+    object CreateGroup : Screen("create_group")
+    object JoinGroup : Screen("join_group")
+    object GroupChat : Screen("group_chat/{groupId}/{groupName}") {
+        fun createRoute(groupId: String, groupName: String) = "group_chat/$groupId/$groupName"
     }
 }

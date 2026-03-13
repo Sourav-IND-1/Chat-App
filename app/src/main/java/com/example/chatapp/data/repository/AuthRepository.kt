@@ -39,8 +39,8 @@ class AuthRepository(
     companion object {
         private const val TAG = "AuthRepository"
 
-        // Web API key from local.properties -> BuildConfig
-        private val API_KEY = com.example.chatapp.BuildConfig.FIREBASE_WEB_API_KEY
+        // Web API key from obfuscated BuildConfig via ApiKeys
+        private val API_KEY = com.example.chatapp.data.network.ApiKeys.firebaseWebApi
 
         private val SIGN_UP_URL =
             "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=$API_KEY"
@@ -71,33 +71,8 @@ class AuthRepository(
         }
 
     // ── Login ────────────────────────────────────────────────────
-
-    /**
-     * Sign in via REST → then sign in via SDK to set currentUser.
-     */
-    suspend fun login(email: String, password: String): AuthResult<Unit> {
-        return try {
-            // 1. Validate credentials via REST (no reCAPTCHA)
-            val body = JSONObject().apply {
-                put("email", email)
-                put("password", password)
-                put("returnSecureToken", true)
-            }
-            val response = postJson(SIGN_IN_URL, body)
-
-            if (response.has("error")) {
-                val msg = response.getJSONObject("error").optString("message", "Login failed")
-                return AuthResult.Error(friendlyAuthError(msg))
-            }
-
-            // 2. Sign in via SDK to populate auth.currentUser
-            auth.signInWithEmailAndPassword(email, password).await()
-            AuthResult.Success(Unit)
-        } catch (e: Exception) {
-            Log.e(TAG, "Login failed", e)
-            AuthResult.Error(e.message ?: "An unknown error occurred")
-        }
-    }
+    
+    // Login function removed: Replaced by One-Install-One-Account flow (forced registration)
 
     // ── Register ─────────────────────────────────────────────────
 
@@ -114,11 +89,13 @@ class AuthRepository(
         password: String,
         name: String,
         context: Context
-    ): AuthResult<Unit> {
-        return try {
-            // 1. Create account via REST
+    ): AuthResult<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val lowercaseName = name.trim().lowercase()
+
+            // 1. Create account via REST to explicitly catch EMAIL_EXISTS
             val signUpBody = JSONObject().apply {
-                put("email", email)
+                put("email", email.trim())
                 put("password", password)
                 put("returnSecureToken", true)
             }
@@ -126,24 +103,44 @@ class AuthRepository(
 
             if (signUpResp.has("error")) {
                 val msg = signUpResp.getJSONObject("error").optString("message", "Registration failed")
-                return AuthResult.Error(friendlyAuthError(msg))
+                if (msg.contains("EMAIL_EXISTS")) {
+                    Log.d(TAG, "Intercepted EMAIL_EXISTS. Attempting ghost account recovery...")
+                    return@withContext handleGhostAccountRecovery(email, password, name, context)
+                }
+                return@withContext AuthResult.Error(friendlyAuthError(msg))
             }
 
             val idToken = signUpResp.getString("idToken")
             val uid = signUpResp.getString("localId")
 
-            // 2. Set displayName via REST
+            // 2. Sign in via SDK immediately so we have `auth != null` for Security Rules
+            auth.signInWithEmailAndPassword(email.trim(), password).await()
+            val user = auth.currentUser ?: throw Exception("Failed to authenticate locally")
+
+            // 3. SECURE CLAIM: Check if username is taken now that we are authenticated
+            val usernameRef = rtdb.child("usernames").child(lowercaseName)
+            val snapshot = usernameRef.get().await()
+            
+            if (snapshot.exists() && snapshot.getValue(String::class.java) != uid) {
+                // Name is taken by someone else! Rollback the account creation.
+                Log.d(TAG, "Registration failed: Username '$lowercaseName' is already taken. Rolling back auth...")
+                user.delete().await()
+                auth.signOut()
+                return@withContext AuthResult.Error("Username already taken. Please choose another one.")
+            }
+
+            // 4. Claim the username
+            usernameRef.setValue(uid).await()
+
+            // 5. Update Profile
             val updateBody = JSONObject().apply {
                 put("idToken", idToken)
-                put("displayName", name)
+                put("displayName", name.trim())
                 put("returnSecureToken", false)
             }
             postJson(UPDATE_PROFILE_URL, updateBody)
 
-            // 3. Sign in via SDK to populate auth.currentUser
-            auth.signInWithEmailAndPassword(email, password).await()
-
-            // 4. Write profile to RTDB
+            // 7. Write profile to RTDB
             val profileData = mapOf(
                 "name" to name,
                 "status" to "Available",
@@ -151,13 +148,102 @@ class AuthRepository(
             )
             rtdb.child("users").child(uid).setValue(profileData).await()
 
-            // 5. Generate EC key pair + publish publicKey to RTDB
+            // 8. Generate EC key pair + publish publicKey to RTDB
             KeyManager.initIdentityKey(context, uid, name)
 
             AuthResult.Success(Unit)
         } catch (e: Exception) {
+            // Failsafe cleanup of claimed username if anything below REST creation crashes
+            try {
+                val lowercaseName = name.trim().lowercase()
+                rtdb.child("usernames").child(lowercaseName).removeValue()
+            } catch (cleanupEx: Exception) {
+                Log.w(TAG, "Failed to cleanup claimed username after registration error", cleanupEx)
+            }
             Log.e(TAG, "Registration failed", e)
             AuthResult.Error(e.message ?: "An unknown error occurred")
+        }
+    }
+
+    /**
+     * Google Sign-In Flow:
+     * 1. Exchange Google ID Token for Firebase Credential
+     * 2. Sign in or Create account in Firebase Auth
+     * 3. Sync profile to RTDB and generate EC Keys
+     */
+    suspend fun signInWithGoogle(context: Context, idToken: String): AuthResult<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val credential = com.google.firebase.auth.GoogleAuthProvider.getCredential(idToken, null)
+            val authResult = auth.signInWithCredential(credential).await()
+            val user = authResult.user ?: throw Exception("Google Sign-In failed")
+
+            val isNewUser = authResult.additionalUserInfo?.isNewUser == true
+            val name = user.displayName ?: "Google User"
+            val email = user.email ?: ""
+            val uid = user.uid
+
+            if (isNewUser) {
+                // Claim username (using a sanitized version of their name or email prefix)
+                val baseUsername = (user.email?.substringBefore("@") ?: name.replace(" ", "")).lowercase()
+                var finalUsername = baseUsername
+                var counter = 1
+                
+                // Keep checking until we find an available username
+                while (rtdb.child("usernames").child(finalUsername).get().await().exists()) {
+                    finalUsername = "$baseUsername$counter"
+                    counter++
+                }
+                rtdb.child("usernames").child(finalUsername).setValue(uid).await()
+
+                // Save initial profile
+                val profileData = mapOf(
+                    "name" to name,
+                    "status" to "Available",
+                    "email" to email,
+                    "profilePhotoUrl" to (user.photoUrl?.toString() ?: "")
+                )
+                rtdb.child("users").child(uid).setValue(profileData).await()
+
+                // Generate keys immediately for new users
+                KeyManager.initIdentityKey(context, uid, name)
+            } else {
+                // For returning users, just ensure their keys still exist locally
+                ensurePublicKey(context, uid, name)
+            }
+
+            AuthResult.Success(Unit)
+        } catch (e: Exception) {
+            Log.e(TAG, "Google Sign-In failed", e)
+            AuthResult.Error(e.message ?: "Failed to sign in with Google")
+        }
+    }
+    /**
+     * If a user reinstalls, their FirebaseAuth cache is empty, but their account still exists in the cloud.
+     * When they try to register the same email, it throws EMAIL_EXISTS.
+     * We prove ownership by signing in, wipe the old "ghost" data completely, and then re-register fresh keys.
+     */
+    private suspend fun handleGhostAccountRecovery(
+        email: String,
+        password: String,
+        name: String,
+        context: Context
+    ): AuthResult<Unit> {
+        try {
+            // 1. Prove ownership of the ghost account
+            auth.signInWithEmailAndPassword(email, password).await()
+            val user = auth.currentUser ?: return AuthResult.Error("Failed to claim old account.")
+            
+            // 2. Obliterate the ghost account data and auth record
+            // The ghost account likely corresponds to the current name they are trying to register,
+            // but we use the ghost's actual profile displayName if possible.
+            val ghostName = user.displayName ?: name
+            deleteCurrentAccount(context, user.uid, ghostName)
+            
+            // 3. Retry registration from scratch now that the email is freed
+            return register(email, password, name, context)
+        } catch (e: Exception) {
+            Log.e(TAG, "Ghost account recovery failed", e)
+            return AuthResult.Error("Email already in use. If this is your old account, please double check the password to overwrite it.")
         }
     }
 
@@ -191,10 +277,52 @@ class AuthRepository(
         }
     }
 
-    // ── Logout ───────────────────────────────────────────────────
+    // ── Logout & Account Deletion ────────────────────────────────
 
     fun logout() {
         auth.signOut()
+    }
+    
+    /**
+     * Completely destroys the account, removing all traces from Local DB, Keystore, 
+     * RTDB chats, RTDB Profile, and Firebase Auth.
+     */
+    suspend fun deleteCurrentAccount(context: Context, uid: String, knownName: String? = null) {
+        try {
+            val user = auth.currentUser ?: return
+            val displayName = knownName ?: user.displayName
+            
+            // 1. Clear Local SQLite Database on IO Thread
+            withContext(Dispatchers.IO) {
+                val db = com.example.chatapp.data.local.AppDatabase.getDatabase(context)
+                db.clearAllTables()
+            }
+
+            // 2. Clear our Global Inbox from RTDB
+            // Since we use an Inbox model, we just delete our own inbox. Any messages *we* sent
+            // to others are in *their* inboxes and will be decrypted/deleted when they pull them,
+            // or fail to decrypt (and get deleted anyway) if they pull them after we delete our keys.
+            try {
+                rtdb.child("user_inboxes").child(uid).removeValue().await()
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed to clear global inbox on deletion", e)
+            }
+
+            // 3. Delete RTDB Profile (Total destruction instead of soft delete)
+            rtdb.child("users").child(uid).removeValue().await()
+
+            // 4. Delete EC Identity Key from Android KeyStore
+            KeyManager.deleteIdentityKey(uid)
+            
+            // 5. Delete Firebase Auth Record
+            user.delete().await()
+            auth.signOut()
+            Log.d(TAG, "Account successfully obliterated from system")
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to fully delete account", e)
+            auth.signOut() 
+            throw e
+        }
     }
 
     // ── Helpers ──────────────────────────────────────────────────

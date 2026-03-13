@@ -2,6 +2,7 @@ package com.example.chatapp.ui.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -9,6 +10,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -30,6 +34,7 @@ import com.example.chatapp.data.local.UserEntity
 import com.example.chatapp.data.repository.UserRepository
 import com.example.chatapp.domain.model.User
 import com.example.chatapp.ui.navigation.Screen
+import com.example.chatapp.ui.AppViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -73,6 +78,26 @@ class HomeViewModel : ViewModel() {
             _loading.value = false
         }
     }
+
+    fun deleteChats(context: android.content.Context, currentUserId: String, selectedUserIds: List<String>) {
+        viewModelScope.launch {
+            val chatDao = AppDatabase.getDatabase(context).chatDao()
+            val repo = com.example.chatapp.data.repository.ChatRepository(chatDao, currentUserId, context)
+            selectedUserIds.forEach {
+                repo.deleteChatAndContact(it)
+            }
+        }
+    }
+
+    fun deleteGroups(context: android.content.Context, currentUserId: String, selectedGroupIds: List<String>) {
+        viewModelScope.launch {
+            val groupDao = AppDatabase.getDatabase(context).groupDao()
+            val repo = com.example.chatapp.data.repository.GroupRepository(groupDao, currentUserId, context)
+            selectedGroupIds.forEach {
+                repo.deleteGroup(it)
+            }
+        }
+    }
 }
 
 // ── HomeScreen ────────────────────────────────────────────────────
@@ -85,11 +110,17 @@ fun HomeScreen(
 ) {
     val context = LocalContext.current
     val db = remember { AppDatabase.getDatabase(context) }
-    val contacts by db.chatDao().getAllContacts().collectAsState(initial = emptyList())
+    val contacts by db.chatDao().getContactsSortedByRecentMessage().collectAsState(initial = emptyList())
     val currentUserId = remember { com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: "" }
 
     var selectedTab by remember { mutableIntStateOf(0) }
-    val tabs = listOf("Chats", "People")
+    val tabs = listOf("Chats", "People", "Groups")
+
+    val selectedChats = remember { mutableStateListOf<String>() }
+    val isSelectionMode = selectedChats.isNotEmpty()
+
+    val selectedGroups = remember { mutableStateListOf<String>() }
+    val isGroupSelectionMode = selectedGroups.isNotEmpty()
 
     val people by viewModel.people.collectAsState()
     val loading by viewModel.loading.collectAsState()
@@ -105,28 +136,95 @@ fun HomeScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        if (currentUserId.isNotEmpty()) {
+            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                val existingMe = db.chatDao().getUserById(currentUserId)
+                if (existingMe == null) {
+                    db.chatDao().insertUser(
+                        UserEntity(
+                            userId = currentUserId,
+                            name = "Me (You)",
+                            profilePhotoUrl = null,
+                            status = "Available"
+                        )
+                    )
+                }
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
             Column {
-                TopAppBar(
-                    title = {
-                        Text(
-                            "ChatApp",
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp
-                        )
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = AppBlue),
-                    actions = {
-                        IconButton(onClick = { navController.navigate(Screen.Search.route) }) {
-                            Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.White)
+                if (selectedTab == 0 && isSelectionMode) {
+                    TopAppBar(
+                        title = { Text("${selectedChats.size} selected", color = Color.White, fontWeight = FontWeight.Bold) },
+                        colors = TopAppBarDefaults.topAppBarColors(containerColor = AppBlue),
+                        navigationIcon = {
+                            IconButton(onClick = { selectedChats.clear() }) {
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Cancel", tint = Color.White)
+                            }
+                        },
+                        actions = {
+                            IconButton(onClick = {
+                                viewModel.deleteChats(context, currentUserId, selectedChats.toList())
+                                selectedChats.clear()
+                            }) {
+                                Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.White)
+                            }
                         }
-                        IconButton(onClick = { navController.navigate(Screen.Profile.route) }) {
-                            Icon(Icons.Default.AccountCircle, contentDescription = "Profile", tint = Color.White)
+                    )
+                } else if (selectedTab == 2 && isGroupSelectionMode) {
+                    TopAppBar(
+                        title = { Text("${selectedGroups.size} selected", color = Color.White, fontWeight = FontWeight.Bold) },
+                        colors = TopAppBarDefaults.topAppBarColors(containerColor = AppBlue),
+                        navigationIcon = {
+                            IconButton(onClick = { selectedGroups.clear() }) {
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Cancel", tint = Color.White)
+                            }
+                        },
+                        actions = {
+                            IconButton(onClick = {
+                                viewModel.deleteGroups(context, currentUserId, selectedGroups.toList())
+                                selectedGroups.clear()
+                            }) {
+                                Icon(Icons.Default.Delete, contentDescription = "Delete Group", tint = Color.White)
+                            }
                         }
-                    }
-                )
+                    )
+                } else {
+                    TopAppBar(
+                        title = {
+                            Text(
+                                "ChatApp",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp
+                            )
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(containerColor = AppBlue),
+                        actions = {
+                            IconButton(onClick = {
+                                navController.navigate(Screen.Search.route)
+                            }) {
+                                Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.White)
+                            }
+                            IconButton(onClick = { navController.navigate(Screen.Profile.route) }) {
+                                Icon(Icons.Default.AccountCircle, contentDescription = "Profile", tint = Color.White)
+                            }
+                            TextButton(onClick = {
+                                val authViewModel = AppViewModel()
+                                authViewModel.logout(context)
+                                navController.navigate(Screen.Register.route) {
+                                    popUpTo(0)
+                                }
+                            }) {
+                                Text("Logout", color = Color.White, fontWeight = FontWeight.Medium)
+                            }
+                        }
+                    )
+                }
                 // Tab row
                 SecondaryTabRow(
                     selectedTabIndex = selectedTab,
@@ -156,6 +254,39 @@ fun HomeScreen(
                 }
             }
         },
+        floatingActionButton = {
+            if (selectedTab == 2) {
+                var expanded by remember { mutableStateOf(false) }
+                Box {
+                    FloatingActionButton(
+                        onClick = { expanded = true },
+                        containerColor = AppBlue,
+                        contentColor = Color.White
+                    ) {
+                        Icon(androidx.compose.material.icons.Icons.Default.Add, contentDescription = "Add Group")
+                    }
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Create Group") },
+                            onClick = {
+                                expanded = false
+                                navController.navigate(Screen.CreateGroup.route)
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Join Group") },
+                            onClick = {
+                                expanded = false
+                                navController.navigate(Screen.JoinGroup.route)
+                            }
+                        )
+                    }
+                }
+            }
+        },
         containerColor = Color.White
     ) { padding ->
         when (selectedTab) {
@@ -164,8 +295,19 @@ fun HomeScreen(
                 db = db,
                 currentUserId = currentUserId,
                 padding = padding,
+                selectedChats = selectedChats,
+                isSelectionMode = isSelectionMode,
                 onChatClick = { userId, name ->
-                    navController.navigate(Screen.Chat.createRoute(userId, name))
+                    if (isSelectionMode) {
+                        if (selectedChats.contains(userId)) selectedChats.remove(userId) else selectedChats.add(userId)
+                    } else {
+                        navController.navigate(Screen.Chat.createRoute(userId, name))
+                    }
+                },
+                onChatLongClick = { userId ->
+                    if (!isSelectionMode) {
+                        selectedChats.add(userId)
+                    }
                 }
             )
             1 -> PeopleTab(
@@ -175,7 +317,25 @@ fun HomeScreen(
                 padding = padding,
                 localContacts = contacts.map { it.userId }.toSet(),
                 onPersonClick = { user ->
-                    navController.navigate(Screen.Chat.createRoute(user.userId, user.name))
+                    val displayName = if (user.status == "Deleted Account") "${user.name} [DELETED]" else user.name
+                    navController.navigate(Screen.Chat.createRoute(user.userId, displayName))
+                }
+            )
+            2 -> com.example.chatapp.ui.group.GroupsTab(
+                padding = padding,
+                selectedGroups = selectedGroups,
+                isSelectionMode = isGroupSelectionMode,
+                onGroupClick = { groupId, name ->
+                    if (isGroupSelectionMode) {
+                        if (selectedGroups.contains(groupId)) selectedGroups.remove(groupId) else selectedGroups.add(groupId)
+                    } else {
+                        navController.navigate(Screen.GroupChat.createRoute(groupId, name))
+                    }
+                },
+                onGroupLongClick = { groupId ->
+                    if (!isGroupSelectionMode) {
+                        selectedGroups.add(groupId)
+                    }
                 }
             )
         }
@@ -190,7 +350,10 @@ fun ChatsTab(
     db: AppDatabase,
     currentUserId: String,
     padding: PaddingValues,
-    onChatClick: (String, String) -> Unit
+    selectedChats: List<String>,
+    isSelectionMode: Boolean,
+    onChatClick: (String, String) -> Unit,
+    onChatLongClick: (String) -> Unit
 ) {
     if (contacts.isEmpty()) {
         Box(
@@ -216,7 +379,9 @@ fun ChatsTab(
                     user = user,
                     db = db,
                     currentUserId = currentUserId,
-                    onClick = { onChatClick(user.userId, user.name) }
+                    isSelected = selectedChats.contains(user.userId),
+                    onClick = { onChatClick(user.userId, user.name) },
+                    onLongClick = { onChatLongClick(user.userId) }
                 )
                 HorizontalDivider(
                     modifier = Modifier.padding(start = 72.dp),
@@ -294,20 +459,38 @@ fun PeopleTab(
 
 // ── List Items ────────────────────────────────────────────────────
 
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
-fun ChatListItem(user: UserEntity, db: AppDatabase, currentUserId: String, onClick: () -> Unit) {
+fun ChatListItem(
+    user: UserEntity, 
+    db: AppDatabase, 
+    currentUserId: String, 
+    isSelected: Boolean = false,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit = {}
+) {
     val latestMessage by db.chatDao()
         .getLatestMessageForUser(currentUserId, user.userId)
         .collectAsState(initial = null)
+        
+    val unreadCount by db.chatDao()
+        .getUnreadCount(currentUserId, user.userId)
+        .collectAsState(initial = 0)
+
+    val displayName = if (user.status == "Deleted Account") "${user.name} [DELETED]" else user.name
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .background(if (isSelected) AppBlue.copy(alpha = 0.2f) else Color.Transparent)
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            )
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        UserAvatar(name = user.name, size = 50)
+        UserAvatar(name = displayName, size = 50)
         Spacer(modifier = Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
             Row(
@@ -316,10 +499,10 @@ fun ChatListItem(user: UserEntity, db: AppDatabase, currentUserId: String, onCli
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = user.name,
+                    text = displayName,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
-                    color = Color.Black
+                    color = if (user.status == "Deleted Account") Color.Gray else Color.Black
                 )
                 latestMessage?.let {
                     Text(
@@ -330,19 +513,45 @@ fun ChatListItem(user: UserEntity, db: AppDatabase, currentUserId: String, onCli
                 }
             }
             Spacer(modifier = Modifier.height(2.dp))
-            Text(
-                text = latestMessage?.content ?: "Tap to start chatting",
-                fontSize = 14.sp,
-                color = Color.Gray,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = latestMessage?.content ?: "Tap to start chatting",
+                    fontSize = 14.sp,
+                    color = Color.Gray,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
+                )
+                if (unreadCount > 0) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Surface(
+                        shape = CircleShape,
+                        color = AppBlue,
+                        modifier = Modifier.sizeIn(minWidth = 20.dp, minHeight = 20.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(horizontal = 4.dp)) {
+                            Text(
+                                text = unreadCount.toString(),
+                                color = Color.White,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
 
 @Composable
 fun PersonListItem(user: User, alreadyInContacts: Boolean, onClick: () -> Unit) {
+    val displayName = if (user.status == "Deleted Account") "${user.name} [DELETED]" else user.name
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -350,20 +559,20 @@ fun PersonListItem(user: User, alreadyInContacts: Boolean, onClick: () -> Unit) 
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        UserAvatar(name = user.name, size = 50)
+        UserAvatar(name = displayName, size = 50)
         Spacer(modifier = Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = user.name,
+                text = displayName,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
-                color = Color.Black
+                color = if (user.status == "Deleted Account") Color.Gray else Color.Black
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = user.status ?: "Available",
+                text = if (user.status == "Deleted Account") "Deleted Account" else user.status ?: "Available",
                 fontSize = 14.sp,
-                color = Color.Gray,
+                color = if (user.status == "Deleted Account") Color.Red.copy(alpha=0.6f) else Color.Gray,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

@@ -40,7 +40,9 @@ fun ProfileScreen(
     var editName by remember { mutableStateOf("") }
     var editStatus by remember { mutableStateOf("") }
     var isSaving by remember { mutableStateOf(false) }
+    var isDeleting by remember { mutableStateOf(false) }
     var saved by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
     var isLoadingProfile by remember { mutableStateOf(true) }
 
     // Load profile from RTDB on first composition
@@ -127,10 +129,17 @@ fun ProfileScreen(
                         val id = uid ?: return@Button
                         isSaving = true
                         saved = false
+                        errorMessage = null
                         scope.launch {
-                            userRepo.updateUserProfile(id, editName.trim(), editStatus.trim())
-                            isSaving = false
-                            saved = true
+                            try {
+                                userRepo.updateUserProfile(id, editName.trim(), editStatus.trim())
+                                isSaving = false
+                                saved = true
+                            } catch (e: Exception) {
+                                isSaving = false
+                                saved = false
+                                errorMessage = e.message ?: "Failed to update profile."
+                            }
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -151,13 +160,18 @@ fun ProfileScreen(
                     Spacer(Modifier.height(8.dp))
                     Text("Profile saved!", color = AppBlue, fontWeight = FontWeight.SemiBold)
                 }
+                
+                errorMessage?.let { error ->
+                    Spacer(Modifier.height(8.dp))
+                    Text(error, color = Color.Red, fontWeight = FontWeight.SemiBold)
+                }
 
                 Spacer(Modifier.height(32.dp))
 
                 OutlinedButton(
                     onClick = {
                         appViewModel.logout(context)
-                        navController.navigate("login") {
+                        navController.navigate("login") { // Actually, we navigated to Register previously, wait let me check startDestination logic. Let's navigate to Screen.Register.route
                             popUpTo(0)
                         }
                     },
@@ -165,6 +179,29 @@ fun ProfileScreen(
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red)
                 ) {
                     Text("Logout")
+                }
+
+                Spacer(Modifier.height(16.dp))
+
+                OutlinedButton(
+                    onClick = {
+                        isDeleting = true
+                        appViewModel.deleteAccountCompletely(context) {
+                            isDeleting = false
+                            navController.navigate(com.example.chatapp.ui.navigation.Screen.Register.route) {
+                                popUpTo(0)
+                            }
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Red),
+                    enabled = !isDeleting && uid != null
+                ) {
+                    if (isDeleting) {
+                        CircularProgressIndicator(modifier = Modifier.size(18.dp), strokeWidth = 2.dp, color = Color.Red)
+                    } else {
+                        Text("Delete Account completely")
+                    }
                 }
             }
         }

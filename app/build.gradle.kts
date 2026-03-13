@@ -3,7 +3,6 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
-    id("com.google.gms.google-services")
     id("com.google.devtools.ksp")
 }
 
@@ -29,8 +28,8 @@ android {
         if (localPropertiesFile.exists()) {
             localProperties.load(localPropertiesFile.inputStream())
         }
-        val apiKey = localProperties.getProperty("FIREBASE_WEB_API_KEY") ?: ""
-        buildConfigField("String", "FIREBASE_WEB_API_KEY", "\"$apiKey\"")
+        val googleClientId = localProperties.getProperty("GOOGLE_WEB_CLIENT_ID") ?: ""
+        buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleClientId\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -62,6 +61,8 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation("androidx.compose.material:material-icons-extended:1.6.3")
+    implementation("androidx.documentfile:documentfile:1.0.1")
 
     // BOM 32.8.0 → firebase-auth:22.3.1 (no mandatory reCAPTCHA on sign-up)
     // firebase-auth 23.x+ requires reCAPTCHA Enterprise to be fully configured;
@@ -69,6 +70,11 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-database")
+    
+    // Google Sign-In (Credential Manager APIs)
+    implementation("androidx.credentials:credentials:1.2.1")
+    implementation("androidx.credentials:credentials-play-services-auth:1.2.1")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.0")
     
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.8.7")
@@ -78,8 +84,9 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
     
-    // Image Loading
+    // Image Loading & Storage
     implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("com.cloudinary:cloudinary-android:2.5.0")
     
     // ViewModel & Coroutines
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")

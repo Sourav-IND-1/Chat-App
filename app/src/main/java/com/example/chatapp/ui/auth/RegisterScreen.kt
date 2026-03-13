@@ -9,13 +9,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.example.chatapp.BuildConfig
 import com.example.chatapp.data.repository.AuthRepository
 import com.example.chatapp.domain.model.AuthResult
 import com.example.chatapp.ui.navigation.Screen
+import com.example.chatapp.ui.AppViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun RegisterScreen(navController: NavController) {
+fun RegisterScreen(navController: NavController, appViewModel: AppViewModel) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val authRepo = remember { AuthRepository() }
@@ -82,8 +88,6 @@ fun RegisterScreen(navController: NavController) {
                     message = null
                     isLoading = true
                     scope.launch {
-                        // register() handles everything:
-                        // Firebase Auth account + displayName + RTDB profile + EC key pair
                         val result = authRepo.register(
                             email = email.trim(),
                             password = password,
@@ -92,8 +96,9 @@ fun RegisterScreen(navController: NavController) {
                         )
                         when (result) {
                             is AuthResult.Success -> {
+                                appViewModel.checkStartupState(context)
                                 navController.navigate(Screen.Home.route) {
-                                    popUpTo(Screen.Login.route) { inclusive = true }
+                                    popUpTo(0) { inclusive = true }
                                 }
                             }
                             is AuthResult.Error -> {
@@ -108,10 +113,65 @@ fun RegisterScreen(navController: NavController) {
             ) {
                 Text("Register")
             }
-        }
-
-        TextButton(onClick = { navController.popBackStack() }) {
-            Text("Back to Login")
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            OutlinedButton(
+                onClick = {
+                    message = null
+                    isLoading = true
+                    scope.launch {
+                        try {
+                            val credentialManager = CredentialManager.create(context)
+                            val googleIdOption = GetGoogleIdOption.Builder()
+                                .setFilterByAuthorizedAccounts(false)
+                                .setServerClientId(BuildConfig.GOOGLE_WEB_CLIENT_ID)
+                                .setAutoSelectEnabled(true)
+                                .build()
+                                
+                            // Add com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption as a fallback 
+                            // to trigger the native Add Account flow when the device has NO accounts.
+                            val signInWithGoogleOption = com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption.Builder(BuildConfig.GOOGLE_WEB_CLIENT_ID)
+                                .build()
+                                
+                            val request = GetCredentialRequest.Builder()
+                                .addCredentialOption(googleIdOption)
+                                .addCredentialOption(signInWithGoogleOption)
+                                .build()
+                                
+                            val result = credentialManager.getCredential(request = request, context = context)
+                            val credential = result.credential
+                            
+                            if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+                                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                                val authResult = authRepo.signInWithGoogle(context, googleIdTokenCredential.idToken)
+                                when (authResult) {
+                                    is AuthResult.Success -> {
+                                        appViewModel.checkStartupState(context)
+                                        navController.navigate(Screen.Home.route) {
+                                            popUpTo(0) { inclusive = true }
+                                        }
+                                    }
+                                    is AuthResult.Error -> {
+                                        message = authResult.message
+                                        isLoading = false
+                                    }
+                                    else -> { isLoading = false }
+                                }
+                            } else {
+                                message = "Unexpected credential type"
+                                isLoading = false
+                            }
+                        } catch (e: Exception) {
+                            android.util.Log.e("GoogleSignIn", "CredentialManager failed", e)
+                            message = "Google Sign-In failed: ${e.message ?: e.javaClass.simpleName}"
+                            isLoading = false
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Continue with Google")
+            }
         }
 
         message?.let {
