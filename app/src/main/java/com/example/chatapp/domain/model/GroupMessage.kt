@@ -8,15 +8,29 @@ data class GroupMessage(
     val content: String = "",
     val timestamp: Long = 0L,
     val isSentByMe: Boolean = false,
-    
+
     // Media support
     val mediaUrl: String? = null,
+    val mediaKey: String? = null,
+    val mediaIv: String? = null,
+    val mediaFileName: String? = null,
     val mediaType: String? = null,
-    
+
     // Poll support
     val isPoll: Boolean = false,
     val pollId: String? = null,
     val pollQuestion: String? = null,
     val pollOptions: Map<String, Int> = emptyMap(), // optionText to voteCount
-    val userVotedOption: String? = null // if the current user has voted
+    val userVotedOption: String? = null, // if the current user has voted
+
+    // Read tracking
+    val readByCount: Int = 0,
+    val isReadByMe: Boolean = false,
+
+    // Group Invites
+    val isGroupInvite: Boolean = false,
+    val inviteGroupId: String? = null,
+    val inviteGroupName: String? = null,
+    val inviteStatus: String = "UNSENT"
 )
+

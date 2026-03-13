@@ -23,6 +23,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
+import com.example.chatapp.data.local.GroupJoinRequestEntity
+import com.example.chatapp.data.local.AppDatabase
 import java.util.UUID
 
 enum class ChannelState { PENDING, READY, ERROR }
@@ -59,6 +62,11 @@ class ChatRepository(
     suspend fun establishChannel(otherUserId: String) {
         _channelState.value = ChannelState.PENDING
         _errorMessage.value = null
+
+        if (otherUserId == currentUserId) {
+            _channelState.value = ChannelState.READY
+            return
+        }
 
         val ctx = context ?: run {
             _channelState.value = ChannelState.ERROR
@@ -130,10 +138,21 @@ class ChatRepository(
 
     private fun deleteCachedMedia(messageId: String, mediaFileName: String?) {
         val ctx = context ?: return
-        val mediaDir = java.io.File(ctx.filesDir, "media")
+        // 1. Delete internal cache
         val name = mediaFileName ?: "${messageId}_media"
-        val file = java.io.File(mediaDir, name)
+        val file = java.io.File(java.io.File(ctx.filesDir, "media"), name)
         if (file.exists()) file.delete()
+        // 2. Delete MediaStore export (Android/media/com.example.chatapp/...)
+        try {
+            val resolver = ctx.contentResolver
+            resolver.delete(
+                android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                "${android.provider.MediaStore.MediaColumns.DISPLAY_NAME} = ?",
+                arrayOf(name)
+            )
+        } catch (e: Exception) {
+            Log.w("ChatRepository", "MediaStore delete failed for $name", e)
+        }
     }
 
     fun clearChatWithUser(otherUserId: String) {
@@ -200,6 +219,11 @@ class ChatRepository(
             }
         }
 
+        // Bypass encryption and network sending if chatting with oneself
+        if (receiverId == currentUserId) {
+            return
+        }
+
         // Guardrail 3: no encryption key
         val secret = sharedSecret ?: run {
             _errorMessage.value = "Secure channel not ready — message saved locally only."
@@ -228,6 +252,35 @@ class ChatRepository(
         }
     }
 
+    /**
+     * Sends an E2EE message payload to the receiver's inbox without saving it
+     * to the sender's local chat history. Ideal for background system signals.
+     */
+    fun sendSystemMessage(receiverId: String, jsonPayload: String) {
+        val messageId = UUID.randomUUID().toString()
+        val timestamp = System.currentTimeMillis()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val secret = sharedSecret ?: return@launch
+
+            try {
+                val result = KeyManager.encrypt(jsonPayload, secret)
+                val encMsg = EncryptedMessage(
+                    messageId = messageId,
+                    senderId = currentUserId,
+                    receiverId = receiverId,
+                    ciphertext = result.ciphertext,
+                    iv = result.iv,
+                    timestamp = timestamp,
+                    ephemeralPublicKey = ephemeralKeyPair?.publicKeyBase64
+                )
+                rtdb.child("user_inboxes").child(receiverId).child("texts").child(messageId).setValue(encMsg).await()
+            } catch (e: Exception) {
+                Log.e("ChatRepository", "System message push failed", e)
+            }
+        }
+    }
+
     fun sendMediaMessage(
         messageId: String,
         receiverId: String,
@@ -239,14 +292,33 @@ class ChatRepository(
     ) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                val timestamp = System.currentTimeMillis()
+
+                // If sending to self, bypass encryption and network
+                if (receiverId == currentUserId) {
+                    val entity = MessageEntity(
+                        messageId = messageId,
+                        senderId = currentUserId,
+                        receiverId = receiverId,
+                        content = "[$mediaType]",
+                        timestamp = timestamp,
+                        isSentByMe = true,
+                        mediaUrl = mediaUrl,
+                        mediaKey = mediaKey,
+                        mediaIv = mediaIv,
+                        mediaType = mediaType,
+                        mediaFileName = mediaFileName
+                    )
+                    chatDao.insertMessage(entity)
+                    return@launch
+                }
+
                 // Get pre-established key
                 val secret = sharedSecret
                 if (secret == null) {
                     _errorMessage.value = "No secure channel established yet."
                     return@launch
                 }
-
-                val timestamp = System.currentTimeMillis()
 
                 val payload = org.json.JSONObject().apply {
                     put("mediaUrl", mediaUrl)
@@ -292,6 +364,72 @@ class ChatRepository(
         }
     }
 
+    fun sendGroupInviteMessage(receiverId: String, inviteGroupId: String, inviteGroupName: String) {
+        val messageId = UUID.randomUUID().toString()
+        val timestamp = System.currentTimeMillis()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            // If sending to self, bypass encryption and network
+            if (receiverId == currentUserId) {
+                val entity = MessageEntity(
+                    messageId = messageId,
+                    senderId = currentUserId,
+                    receiverId = receiverId,
+                    content = "Invited you to join $inviteGroupName",
+                    timestamp = timestamp,
+                    isSentByMe = true,
+                    isGroupInvite = true,
+                    inviteGroupId = inviteGroupId,
+                    inviteGroupName = inviteGroupName
+                )
+                chatDao.insertMessage(entity)
+                return@launch
+            }
+
+            val secret = sharedSecret
+            if (secret == null) {
+                _errorMessage.value = "No secure channel established yet."
+                return@launch
+            }
+
+            val payload = org.json.JSONObject().apply {
+                put("type", "GROUP_INVITE")
+                put("groupId", inviteGroupId)
+                put("groupName", inviteGroupName)
+            }.toString()
+
+            try {
+                val encResult = KeyManager.encrypt(payload, secret)
+                val encMsg = EncryptedMessage(
+                    messageId = messageId,
+                    senderId = currentUserId,
+                    receiverId = receiverId,
+                    ciphertext = encResult.ciphertext,
+                    iv = encResult.iv,
+                    timestamp = timestamp,
+                    ephemeralPublicKey = ephemeralKeyPair?.publicKeyBase64 
+                )
+
+                val entity = MessageEntity(
+                    messageId = messageId,
+                    senderId = currentUserId,
+                    receiverId = receiverId,
+                    content = "Invited you to join $inviteGroupName",
+                    timestamp = timestamp,
+                    isSentByMe = true,
+                    isGroupInvite = true,
+                    inviteGroupId = inviteGroupId,
+                    inviteGroupName = inviteGroupName
+                )
+
+                chatDao.insertMessage(entity)
+                rtdb.child("user_inboxes").child(receiverId).child("texts").child(messageId).setValue(encMsg).await()
+            } catch (e: Exception) {
+                Log.e("ChatRepository", "Failed to send group invite", e)
+            }
+        }
+    }
+
     // ── RTDB Listener (Global Inbox) ─────────────────────────────
 
     private fun createInboxListener(category: String): ChildEventListener {
@@ -320,44 +458,128 @@ class ChatRepository(
                             return@launch
                         }
 
-                        val plaintext = KeyManager.decrypt(encMsg.ciphertext, encMsg.iv, finalSecret)
-                        
-                        var contentStr = plaintext
-                        var urlStr: String? = null
-                        var keyStr: String? = null
-                        var ivStr: String? = null
-                        var typeStr: String? = null
-                        var nameStr: String? = null
-
-                        if (category == "media") {
-                            try {
-                                val json = org.json.JSONObject(plaintext)
-                                urlStr = json.optString("mediaUrl", null)
-                                keyStr = json.optString("mediaKey", null)
-                                ivStr = json.optString("mediaIv", null)
-                                typeStr = json.optString("mediaType", null)
-                                nameStr = json.optString("mediaFileName", null)
-                                contentStr = "[$typeStr]"
-                            } catch (e: Exception) {
-                                contentStr = "[Corrupted Media]"
-                            }
+                        var plaintext = ""
+                        try {
+                            plaintext = KeyManager.decrypt(encMsg.ciphertext, encMsg.iv, finalSecret)
+                        } catch (e: Exception) {
+                            Log.e("ChatRepository", "Decryption failed for incoming message.", e)
+                            return@launch
                         }
 
-                        val entity = MessageEntity(
-                            messageId = encMsg.messageId,
-                            senderId = encMsg.senderId,
-                            receiverId = encMsg.receiverId,
-                            content = contentStr,
-                            timestamp = encMsg.timestamp,
-                            isSentByMe = false,
-                            mediaUrl = urlStr,
-                            mediaKey = keyStr,
-                            mediaIv = ivStr,
-                            mediaType = typeStr,
-                            mediaFileName = nameStr
-                        )
+                        var isSystemMessage = false
 
-                        chatDao.insertMessage(entity)
+                        try {
+                            val json = org.json.JSONObject(plaintext)
+                            val type = json.optString("type", "")
+                            
+                            if (type == "JOIN_REQUEST") {
+                                isSystemMessage = true
+                                val reqGroupId = json.optString("groupId", "")
+                                // Always read requesterId from payload — it's explicitly embedded
+                                val reqRequesterId = json.optString("requesterId").ifEmpty { encMsg.senderId }
+
+                                // Resolve name from local Room DB first (works offline, no RTDB lookup)
+                                val db = AppDatabase.getDatabase(ctx)
+                                var reqSenderName = withContext(Dispatchers.IO) {
+                                    db.chatDao().getUserById(reqRequesterId)?.name
+                                }
+                                // If not in local DB, try fetching from RTDB and caching
+                                if (reqSenderName.isNullOrEmpty()) {
+                                    try {
+                                        val senderProfile = rtdb.child("users").child(reqRequesterId).get().await()
+                                        val rtdbName = senderProfile.child("name").getValue(String::class.java)
+                                        if (!rtdbName.isNullOrEmpty()) {
+                                            reqSenderName = rtdbName
+                                            // Cache into local DB for future lookups
+                                            withContext(Dispatchers.IO) {
+                                                db.chatDao().insertUser(
+                                                    com.example.chatapp.data.local.UserEntity(
+                                                        userId = reqRequesterId,
+                                                        name = rtdbName,
+                                                        status = "",
+                                                        profilePhotoUrl = null
+                                                    )
+                                                )
+                                            }
+                                        }
+                                    } catch (e: Exception) {
+                                        Log.w("ChatRepository", "Could not fetch requester name from RTDB", e)
+                                    }
+                                }
+                                // Last resort: use the UID
+                                if (reqSenderName.isNullOrEmpty()) reqSenderName = reqRequesterId
+
+                                val joinReq = GroupJoinRequestEntity(
+                                    requestId = UUID.randomUUID().toString(),
+                                    groupId = reqGroupId,
+                                    requesterId = reqRequesterId,
+                                    requesterName = reqSenderName,
+                                    timestamp = encMsg.timestamp
+                                )
+                                db.groupDao().insertJoinRequest(joinReq)
+                                Log.d("ChatRepository", "Intercepted JOIN_REQUEST for group $reqGroupId from $reqSenderName ($reqRequesterId)")
+                            } else if (type == "JOIN_ACCEPTED") {
+                                isSystemMessage = true
+                                Log.d("ChatRepository", "Intercepted JOIN_ACCEPTED. Group repository will handle fetching the new key.")
+                            }
+                        } catch (e: Exception) {
+                            // Not a JSON system message, treat as standard chat message
+                        }
+
+                        if (!isSystemMessage) {
+                            var contentStr = plaintext
+                            var urlStr: String? = null
+                            var keyStr: String? = null
+                            var ivStr: String? = null
+                            var typeStr: String? = null
+                            var nameStr: String? = null
+                            
+                            var isGroupInvite = false
+                            var inviteGroupId: String? = null
+                            var inviteGroupName: String? = null
+
+                            try {
+                                val json = org.json.JSONObject(plaintext)
+                                val msgType = json.optString("type", "")
+                                
+                                if (msgType == "GROUP_INVITE") {
+                                    isGroupInvite = true
+                                    inviteGroupId = json.optString("groupId", null)
+                                    inviteGroupName = json.optString("groupName", null)
+                                    contentStr = "Invited you to join ${inviteGroupName ?: "a group"}"
+                                } else if (category == "media") {
+                                    urlStr = json.optString("mediaUrl", null)
+                                    keyStr = json.optString("mediaKey", null)
+                                    ivStr = json.optString("mediaIv", null)
+                                    typeStr = json.optString("mediaType", null)
+                                    nameStr = json.optString("mediaFileName", null)
+                                    contentStr = "[$typeStr]"
+                                }
+                            } catch (e: Exception) {
+                                if (category == "media") {
+                                    contentStr = "[Corrupted Media]"
+                                }
+                            }
+
+                            val entity = MessageEntity(
+                                messageId = encMsg.messageId,
+                                senderId = encMsg.senderId,
+                                receiverId = encMsg.receiverId,
+                                content = contentStr,
+                                timestamp = encMsg.timestamp,
+                                isSentByMe = false,
+                                mediaUrl = urlStr,
+                                mediaKey = keyStr,
+                                mediaIv = ivStr,
+                                mediaType = typeStr,
+                                mediaFileName = nameStr,
+                                isGroupInvite = isGroupInvite,
+                                inviteGroupId = inviteGroupId,
+                                inviteGroupName = inviteGroupName
+                            )
+
+                            chatDao.insertMessage(entity)
+                        }
 
                         if (chatDao.getUserById(encMsg.senderId) == null) {
                             try {
@@ -434,12 +656,14 @@ fun MessageEntity.toDomainModel() = Message(
     messageId = messageId, senderId = senderId, receiverId = receiverId,
     content = content, timestamp = timestamp, isSentByMe = isSentByMe, isRead = isRead,
     mediaUrl = mediaUrl, mediaKey = mediaKey, mediaIv = mediaIv,
-    mediaType = mediaType, mediaFileName = mediaFileName
+    mediaType = mediaType, mediaFileName = mediaFileName,
+    isGroupInvite = isGroupInvite, inviteGroupId = inviteGroupId, inviteGroupName = inviteGroupName, inviteStatus = inviteStatus
 )
 
 fun Message.toEntity() = MessageEntity(
     messageId = messageId, senderId = senderId, receiverId = receiverId,
     content = content, timestamp = timestamp, isSentByMe = isSentByMe, isRead = isRead,
     mediaUrl = mediaUrl, mediaKey = mediaKey, mediaIv = mediaIv,
-    mediaType = mediaType, mediaFileName = mediaFileName
+    mediaType = mediaType, mediaFileName = mediaFileName,
+    isGroupInvite = isGroupInvite, inviteGroupId = inviteGroupId, inviteGroupName = inviteGroupName, inviteStatus = inviteStatus
 )

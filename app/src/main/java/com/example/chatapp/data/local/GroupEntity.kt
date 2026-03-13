@@ -12,5 +12,7 @@ data class GroupEntity(
     val profilePhotoUrl: String? = null,
     val adminId: String,
     val members: List<String> = emptyList(),
-    val createdAt: Long
+    val groupMasterKey: String? = null,
+    val createdAt: Long,
+    val hasExited: Boolean = false
 )

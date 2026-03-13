@@ -12,9 +12,10 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         UserEntity::class, 
         MessageEntity::class, 
         GroupEntity::class, 
-        GroupMessageEntity::class
+        GroupMessageEntity::class,
+        GroupJoinRequestEntity::class
     ], 
-    version = 5, 
+    version = 10, 
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -43,12 +44,56 @@ abstract class AppDatabase : RoomDatabase() {
                     }
                 }
 
+                val MIGRATION_5_6 = object : androidx.room.migration.Migration(5, 6) {
+                    override fun migrate(database: SupportSQLiteDatabase) {
+                        database.execSQL("ALTER TABLE group_messages ADD COLUMN readByCount INTEGER NOT NULL DEFAULT 0")
+                        database.execSQL("ALTER TABLE group_messages ADD COLUMN isReadByMe INTEGER NOT NULL DEFAULT 0")
+                    }
+                }
+
+                val MIGRATION_6_7 = object : androidx.room.migration.Migration(6, 7) {
+                    override fun migrate(database: SupportSQLiteDatabase) {
+                        database.execSQL("ALTER TABLE `groups` ADD COLUMN groupMasterKey TEXT")
+                        database.execSQL("CREATE TABLE IF NOT EXISTS `group_join_requests` (`requestId` TEXT NOT NULL, `groupId` TEXT NOT NULL, `requesterId` TEXT NOT NULL, `requesterName` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, PRIMARY KEY(`requestId`))")
+                    }
+                }
+
+                val MIGRATION_7_8 = object : androidx.room.migration.Migration(7, 8) {
+                    override fun migrate(database: SupportSQLiteDatabase) {
+                        database.execSQL("ALTER TABLE `groups` ADD COLUMN hasExited INTEGER NOT NULL DEFAULT 0")
+                    }
+                }
+
+                val MIGRATION_8_9 = object : androidx.room.migration.Migration(8, 9) {
+                    override fun migrate(database: SupportSQLiteDatabase) {
+                        // Direct messages table migration
+                        database.execSQL("ALTER TABLE messages ADD COLUMN isGroupInvite INTEGER NOT NULL DEFAULT 0")
+                        database.execSQL("ALTER TABLE messages ADD COLUMN inviteGroupId TEXT")
+                        database.execSQL("ALTER TABLE messages ADD COLUMN inviteGroupName TEXT")
+                        database.execSQL("ALTER TABLE messages ADD COLUMN inviteStatus TEXT NOT NULL DEFAULT 'UNSENT'")
+
+                        // Group messages table migration
+                        database.execSQL("ALTER TABLE group_messages ADD COLUMN isGroupInvite INTEGER NOT NULL DEFAULT 0")
+                        database.execSQL("ALTER TABLE group_messages ADD COLUMN inviteGroupId TEXT")
+                        database.execSQL("ALTER TABLE group_messages ADD COLUMN inviteGroupName TEXT")
+                        database.execSQL("ALTER TABLE group_messages ADD COLUMN inviteStatus TEXT NOT NULL DEFAULT 'UNSENT'")
+                    }
+                }
+
+                val MIGRATION_9_10 = object : androidx.room.migration.Migration(9, 10) {
+                    override fun migrate(database: SupportSQLiteDatabase) {
+                        database.execSQL("ALTER TABLE group_messages ADD COLUMN mediaKey TEXT")
+                        database.execSQL("ALTER TABLE group_messages ADD COLUMN mediaIv TEXT")
+                        database.execSQL("ALTER TABLE group_messages ADD COLUMN mediaFileName TEXT")
+                    }
+                }
+
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
                     "chat_database"
                 )
-                    .addMigrations(MIGRATION_3_4, MIGRATION_4_5)
+                    .addMigrations(MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10)
                     .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance

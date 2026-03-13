@@ -76,5 +76,9 @@ fun AppNavHost(
             val groupName = backStackEntry.arguments?.getString("groupName") ?: ""
             com.example.chatapp.ui.group.GroupChatScreen(navController, groupId, groupName)
         }
+        composable("group_info/{groupId}") { backStackEntry ->
+            val groupId = backStackEntry.arguments?.getString("groupId") ?: ""
+            com.example.chatapp.ui.group.GroupInfoScreen(groupId, navController)
+        }
     }
 }

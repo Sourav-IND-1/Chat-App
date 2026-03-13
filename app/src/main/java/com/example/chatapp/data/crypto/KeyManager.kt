@@ -190,6 +190,40 @@ object KeyManager {
         return sharedSecret
     }
 
+    /**
+     * Derives a shared secret using the user's STATIC Identity Private Key and the remote user's STATIC Public Key.
+     * This is used for out-of-band key distribution (like sending the Group Master Key) where Ephemeral Forward Secrecy is not applicable.
+     */
+    suspend fun deriveStaticSharedSecret(
+        myUserId: String,
+        otherUserId: String
+    ): ByteArray? {
+        try {
+            val myPrivate = getPrivateKey(myUserId)
+
+            val snapshot = com.example.chatapp.data.repository.RtdbHelper.db
+                .getReference("users/$otherUserId/publicKey")
+                .get()
+                .await()
+            val otherPublicBase64 = snapshot.getValue(String::class.java) ?: throw PublicKeyMissingException()
+
+            val otherPubKeyBytes = Base64.decode(otherPublicBase64, Base64.NO_WRAP)
+            val keyFactory = KeyFactory.getInstance("EC")
+            val otherPublicKey = keyFactory.generatePublic(X509EncodedKeySpec(otherPubKeyBytes))
+
+            val keyAgreement = KeyAgreement.getInstance("ECDH")
+            keyAgreement.init(myPrivate)
+            keyAgreement.doPhase(otherPublicKey, true)
+            val rawSecret = keyAgreement.generateSecret()
+
+            val digest = MessageDigest.getInstance("SHA-256")
+            return digest.digest(rawSecret)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to derive static shared secret with $otherUserId", e)
+            return null
+        }
+    }
+
     // ── Encryption / Decryption ──────────────────────────────────
 
     data class EncryptionResult(val ciphertext: String, val iv: String)
@@ -226,5 +260,30 @@ object KeyManager {
 
         val plaintextBytes = cipher.doFinal(ciphertextBytes)
         return String(plaintextBytes, Charsets.UTF_8)
+    }
+
+    // ── Tier 3: Group Master Key Management ──────────────────────
+
+    /**
+     * Generates a strong 256-bit (32 byte) AES symmetric key for the group.
+     */
+    fun generateGroupMasterKey(): String {
+        val keyBytes = ByteArray(32)
+        SecureRandom().nextBytes(keyBytes)
+        return Base64.encodeToString(keyBytes, Base64.NO_WRAP)
+    }
+
+    /**
+     * Encrypts the Group Master Key for a specific member using the 1-on-1 shared secret.
+     */
+    fun encryptGroupMasterKeyForMember(masterKey: String, sharedSecret: ByteArray): EncryptionResult {
+        return encrypt(masterKey, sharedSecret)
+    }
+
+    /**
+     * Decrypts the Group Master Key that was encrypted by the Admin.
+     */
+    fun decryptGroupMasterKey(encryptedMasterKeyBase64: String, ivBase64: String, sharedSecret: ByteArray): String {
+        return decrypt(encryptedMasterKeyBase64, ivBase64, sharedSecret)
     }
 }

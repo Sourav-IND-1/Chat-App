@@ -66,6 +66,34 @@ class GroupViewModel : ViewModel() {
         }
     }
 
+    fun exitGroup(groupId: String, onSuccess: () -> Unit) {
+        val repo = groupRepo ?: return
+        viewModelScope.launch {
+            _isLoading.value = true
+            repo.exitGroup(groupId)
+            _isLoading.value = false
+            if (repo.errorMessage.value == null) {
+                onSuccess()
+            } else {
+                _error.value = repo.errorMessage.value
+            }
+        }
+    }
+
+    fun deleteGroup(groupId: String, onSuccess: () -> Unit) {
+        val repo = groupRepo ?: return
+        viewModelScope.launch {
+            _isLoading.value = true
+            repo.deleteGroup(groupId)
+            _isLoading.value = false
+            if (repo.errorMessage.value == null) {
+                onSuccess()
+            } else {
+                _error.value = repo.errorMessage.value
+            }
+        }
+    }
+
     fun clearError() {
         _error.value = null
         groupRepo?.clearError()

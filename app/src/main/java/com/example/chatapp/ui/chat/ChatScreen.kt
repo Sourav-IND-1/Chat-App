@@ -78,6 +78,13 @@ class ChatViewModel(
     val networkStatus: StateFlow<NetworkStatus> = ConnectivityObserver.observe(context)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), NetworkStatus.Available)
 
+    val myGroups: StateFlow<List<com.example.chatapp.domain.model.Group>> = com.example.chatapp.data.repository.GroupRepository(
+        com.example.chatapp.data.local.AppDatabase.getDatabase(context).groupDao(),
+        com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: "",
+        context
+    ).getMyGroups()
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
     init {
         viewModelScope.launch(kotlinx.coroutines.Dispatchers.IO) {
             val db = com.example.chatapp.data.local.AppDatabase.getDatabase(context)
@@ -102,6 +109,29 @@ class ChatViewModel(
     fun sendMessage(content: String) {
         viewModelScope.launch {
             chatRepository.sendMessage(otherUserId, content)
+        }
+    }
+
+    fun joinGroup(groupId: String, onComplete: (String) -> Unit) {
+        viewModelScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            val db = com.example.chatapp.data.local.AppDatabase.getDatabase(context)
+            val groupRepo = com.example.chatapp.data.repository.GroupRepository(db.groupDao(), com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: "", context)
+            val success = groupRepo.joinGroup(groupId)
+            if (success) {
+                onComplete("REQUEST_SENT")
+            } else {
+                onComplete("FAILED")
+            }
+        }
+    }
+    
+    fun updateInviteStatus(messageId: String, status: String) {
+        viewModelScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            val db = com.example.chatapp.data.local.AppDatabase.getDatabase(context)
+            val msgs = db.chatDao().getMessagesByIds(listOf(messageId))
+            if (msgs.isNotEmpty()) {
+                db.chatDao().insertMessage(msgs[0].copy(inviteStatus = status))
+            }
         }
     }
 
@@ -204,8 +234,10 @@ fun ChatScreen(
     val viewModel: ChatViewModel = viewModel(factory = ChatViewModelFactory(userId, userName, context))
     val messages by viewModel.messages.collectAsState()
     val channelState by viewModel.channelState.collectAsState()
-    val networkStatus by viewModel.networkStatus.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
+    val networkStatus by viewModel.networkStatus.collectAsState()
+    val myGroups by viewModel.myGroups.collectAsState()
+    
     val listState = rememberLazyListState()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -414,6 +446,14 @@ fun ChatScreen(
                     ChatBubble(
                         message = message,
                         isSelected = selectedMessages.contains(message.messageId),
+                        isAlreadyMember = myGroups.any { it.groupId == message.inviteGroupId },
+                        onJoinGroup = { messageId, groupId ->
+                            viewModel.joinGroup(groupId) { status ->
+                                if (status == "REQUEST_SENT") {
+                                    viewModel.updateInviteStatus(messageId, status)
+                                }
+                            }
+                        },
                         onClick = {
                             if (isSelectionMode) {
                                 if (selectedMessages.contains(message.messageId)) selectedMessages.remove(message.messageId) else selectedMessages.add(message.messageId)
@@ -500,11 +540,56 @@ fun ChatScreen(
     }
 }
 
+@Composable
+fun GroupInviteView(
+    groupName: String?,
+    inviteStatus: String,
+    isSentByMe: Boolean,
+    isAlreadyMember: Boolean,
+    onJoin: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(0.8f)
+            .background(Color(0xFFE3F2FD), RoundedCornerShape(8.dp))
+            .padding(12.dp)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Default.Lock, contentDescription = "Group", tint = AppBlue, modifier = Modifier.size(16.dp))
+            Spacer(Modifier.width(4.dp))
+            Text("E2EE Group Invite", fontSize = 12.sp, color = AppBlue, fontWeight = FontWeight.SemiBold)
+        }
+        Spacer(Modifier.height(8.dp))
+        Text(groupName ?: "Unknown Group", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+        Spacer(Modifier.height(12.dp))
+        
+        val buttonText = when {
+            isSentByMe -> "Invite Sent"
+            isAlreadyMember -> "Already a member"
+            inviteStatus == "REQUEST_SENT" -> "Request Sent"
+            else -> "Join Group"
+        }
+        val isEnabled = !isSentByMe && !isAlreadyMember && inviteStatus == "UNSENT"
+
+        Button(
+            onClick = onJoin,
+            enabled = isEnabled,
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = AppBlue),
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Text(buttonText, color = Color.White)
+        }
+    }
+}
+
 @OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 fun ChatBubble(
     message: Message,
     isSelected: Boolean = false,
+    isAlreadyMember: Boolean = false,
+    onJoinGroup: (String, String) -> Unit = { _, _ -> },
     onClick: () -> Unit = {},
     onLongClick: () -> Unit = {}
 ) {
@@ -545,6 +630,14 @@ fun ChatBubble(
             Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
                 if (message.mediaUrl != null && message.mediaKey != null && message.mediaIv != null) {
                     DecryptedMedia(message = message, modifier = Modifier)
+                } else if (message.isGroupInvite) {
+                    GroupInviteView(
+                        groupName = message.inviteGroupName,
+                        inviteStatus = message.inviteStatus,
+                        isSentByMe = isMine,
+                        isAlreadyMember = isAlreadyMember,
+                        onJoin = { onJoinGroup(message.messageId, message.inviteGroupId ?: "") }
+                    )
                 } else {
                     Text(
                         text = message.content,
@@ -650,8 +743,29 @@ fun DecryptedMedia(message: Message, modifier: Modifier = Modifier) {
         Column(
             modifier = modifier.clickable {
                 mediaUri?.let { uri ->
+                    // Derive proper MIME type from filename extension first,
+                    // then fall back to mediaType category, then */*
+                    val ext = message.mediaFileName
+                        ?.substringAfterLast('.', "")
+                        ?.lowercase()
+                    val mimeType = if (!ext.isNullOrEmpty()) {
+                        android.webkit.MimeTypeMap.getSingleton()
+                            .getMimeTypeFromExtension(ext) ?: when (message.mediaType) {
+                                "Image" -> "image/*"
+                                "Video" -> "video/*"
+                                "Audio" -> "audio/*"
+                                else    -> "application/octet-stream"
+                            }
+                    } else {
+                        when (message.mediaType) {
+                            "Image" -> "image/*"
+                            "Video" -> "video/*"
+                            "Audio" -> "audio/*"
+                            else    -> "application/octet-stream"
+                        }
+                    }
                     val intent = android.content.Intent(android.content.Intent.ACTION_VIEW).apply {
-                        setDataAndType(uri, "*/*") // Let Android decide
+                        setDataAndType(uri, mimeType)
                         addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     }
                     try {

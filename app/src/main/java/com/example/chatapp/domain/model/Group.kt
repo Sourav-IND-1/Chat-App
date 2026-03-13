@@ -7,5 +7,6 @@ data class Group(
     val profilePhotoUrl: String? = null,
     val adminId: String = "",
     val members: List<String> = emptyList(),
-    val createdAt: Long = 0L
+    val createdAt: Long = 0L,
+    val hasExited: Boolean = false
 )

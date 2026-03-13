@@ -2,6 +2,7 @@ package com.example.chatapp.ui.group
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -26,7 +27,10 @@ import java.util.Locale
 fun GroupsTab(
     padding: PaddingValues,
     viewModel: GroupViewModel = viewModel(),
-    onGroupClick: (String, String) -> Unit
+    selectedGroups: List<String> = emptyList(),
+    isSelectionMode: Boolean = false,
+    onGroupClick: (String, String) -> Unit,
+    onGroupLongClick: (String) -> Unit = {}
 ) {
     val context = LocalContext.current
     val groups by viewModel.myGroups.collectAsState()
@@ -57,7 +61,9 @@ fun GroupsTab(
             items(groups) { group ->
                 GroupListItem(
                     group = group,
-                    onClick = { onGroupClick(group.groupId, group.name) }
+                    isSelected = selectedGroups.contains(group.groupId),
+                    onClick = { onGroupClick(group.groupId, group.name) },
+                    onLongClick = { onGroupLongClick(group.groupId) }
                 )
                 HorizontalDivider(
                     modifier = Modifier.padding(start = 72.dp),
@@ -69,15 +75,22 @@ fun GroupsTab(
     }
 }
 
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 fun GroupListItem(
     group: Group,
-    onClick: () -> Unit
+    isSelected: Boolean = false,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .background(if (isSelected) Color(0xFF1565C0).copy(alpha = 0.2f) else Color.Transparent)
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            )
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -90,12 +103,23 @@ fun GroupListItem(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = group.name,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 16.sp,
-                    color = Color.Black
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = group.name,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 16.sp,
+                        color = Color.Black
+                    )
+                    if (group.hasExited) {
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "[EXITED]",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
+                            color = Color.Red
+                        )
+                    }
+                }
                 Text(
                     text = formatGroupTimestamp(group.createdAt),
                     fontSize = 12.sp,

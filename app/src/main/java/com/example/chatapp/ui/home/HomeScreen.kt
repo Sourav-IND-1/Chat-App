@@ -88,6 +88,16 @@ class HomeViewModel : ViewModel() {
             }
         }
     }
+
+    fun deleteGroups(context: android.content.Context, currentUserId: String, selectedGroupIds: List<String>) {
+        viewModelScope.launch {
+            val groupDao = AppDatabase.getDatabase(context).groupDao()
+            val repo = com.example.chatapp.data.repository.GroupRepository(groupDao, currentUserId, context)
+            selectedGroupIds.forEach {
+                repo.deleteGroup(it)
+            }
+        }
+    }
 }
 
 // ── HomeScreen ────────────────────────────────────────────────────
@@ -109,6 +119,9 @@ fun HomeScreen(
     val selectedChats = remember { mutableStateListOf<String>() }
     val isSelectionMode = selectedChats.isNotEmpty()
 
+    val selectedGroups = remember { mutableStateListOf<String>() }
+    val isGroupSelectionMode = selectedGroups.isNotEmpty()
+
     val people by viewModel.people.collectAsState()
     val loading by viewModel.loading.collectAsState()
     val peopleError by viewModel.error.collectAsState()
@@ -123,10 +136,28 @@ fun HomeScreen(
         }
     }
 
+    LaunchedEffect(Unit) {
+        if (currentUserId.isNotEmpty()) {
+            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                val existingMe = db.chatDao().getUserById(currentUserId)
+                if (existingMe == null) {
+                    db.chatDao().insertUser(
+                        UserEntity(
+                            userId = currentUserId,
+                            name = "Me (You)",
+                            profilePhotoUrl = null,
+                            status = "Available"
+                        )
+                    )
+                }
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
             Column {
-                if (isSelectionMode) {
+                if (selectedTab == 0 && isSelectionMode) {
                     TopAppBar(
                         title = { Text("${selectedChats.size} selected", color = Color.White, fontWeight = FontWeight.Bold) },
                         colors = TopAppBarDefaults.topAppBarColors(containerColor = AppBlue),
@@ -141,6 +172,24 @@ fun HomeScreen(
                                 selectedChats.clear()
                             }) {
                                 Icon(Icons.Default.Delete, contentDescription = "Delete", tint = Color.White)
+                            }
+                        }
+                    )
+                } else if (selectedTab == 2 && isGroupSelectionMode) {
+                    TopAppBar(
+                        title = { Text("${selectedGroups.size} selected", color = Color.White, fontWeight = FontWeight.Bold) },
+                        colors = TopAppBarDefaults.topAppBarColors(containerColor = AppBlue),
+                        navigationIcon = {
+                            IconButton(onClick = { selectedGroups.clear() }) {
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Cancel", tint = Color.White)
+                            }
+                        },
+                        actions = {
+                            IconButton(onClick = {
+                                viewModel.deleteGroups(context, currentUserId, selectedGroups.toList())
+                                selectedGroups.clear()
+                            }) {
+                                Icon(Icons.Default.Delete, contentDescription = "Delete Group", tint = Color.White)
                             }
                         }
                     )
@@ -274,8 +323,19 @@ fun HomeScreen(
             )
             2 -> com.example.chatapp.ui.group.GroupsTab(
                 padding = padding,
+                selectedGroups = selectedGroups,
+                isSelectionMode = isGroupSelectionMode,
                 onGroupClick = { groupId, name ->
-                    navController.navigate(Screen.GroupChat.createRoute(groupId, name))
+                    if (isGroupSelectionMode) {
+                        if (selectedGroups.contains(groupId)) selectedGroups.remove(groupId) else selectedGroups.add(groupId)
+                    } else {
+                        navController.navigate(Screen.GroupChat.createRoute(groupId, name))
+                    }
+                },
+                onGroupLongClick = { groupId ->
+                    if (!isGroupSelectionMode) {
+                        selectedGroups.add(groupId)
+                    }
                 }
             )
         }

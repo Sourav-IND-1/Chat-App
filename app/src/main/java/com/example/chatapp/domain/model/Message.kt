@@ -17,5 +17,11 @@ data class Message(
     val mediaKey: String? = null,
     val mediaIv: String? = null,
     val mediaType: String? = null,
-    val mediaFileName: String? = null
+    val mediaFileName: String? = null,
+
+    // Group Invites
+    val isGroupInvite: Boolean = false,
+    val inviteGroupId: String? = null,
+    val inviteGroupName: String? = null,
+    val inviteStatus: String = "UNSENT"
 )
