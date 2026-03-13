@@ -27,3 +27,8 @@ local.properties
 .externalNativeBuild/
 .cxx/
 /captures/
+
+# Python Virtual Environments
+.venv/
+venv/
+env/

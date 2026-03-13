@@ -39,8 +39,8 @@ class AuthRepository(
     companion object {
         private const val TAG = "AuthRepository"
 
-        // Web API key from local.properties -> BuildConfig
-        private val API_KEY = com.example.chatapp.BuildConfig.FIREBASE_WEB_API_KEY
+        // Web API key from obfuscated BuildConfig via ApiKeys
+        private val API_KEY = com.example.chatapp.data.network.ApiKeys.firebaseWebApi
 
         private val SIGN_UP_URL =
             "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=$API_KEY"

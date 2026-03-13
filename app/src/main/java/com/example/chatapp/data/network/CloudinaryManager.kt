@@ -14,11 +14,12 @@ import kotlinx.coroutines.withContext
 object CloudinaryManager {
     private const val TAG = "CloudinaryManager"
     
-    // Configured with the user-provided credentials
-    private val cloudinary = Cloudinary(ObjectUtils.asMap(
-        "cloud_name", "drpzfssem",
-        "api_key", "277344235119189"
-    ))
+    private val cloudinary by lazy {
+        Cloudinary(ObjectUtils.asMap(
+            "cloud_name", ApiKeys.cloudinaryCloudName,
+            "api_key", ApiKeys.cloudinaryApiKey
+        ))
+    }
 
     /**
      * Upload an encrypted byte array to Cloudinary and return the secure URL.

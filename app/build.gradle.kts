@@ -3,7 +3,6 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
-    id("com.google.gms.google-services")
     id("com.google.devtools.ksp")
 }
 
@@ -29,9 +28,6 @@ android {
         if (localPropertiesFile.exists()) {
             localProperties.load(localPropertiesFile.inputStream())
         }
-        val apiKey = localProperties.getProperty("FIREBASE_WEB_API_KEY") ?: ""
-        buildConfigField("String", "FIREBASE_WEB_API_KEY", "\"$apiKey\"")
-        
         val googleClientId = localProperties.getProperty("GOOGLE_WEB_CLIENT_ID") ?: ""
         buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleClientId\"")
 
