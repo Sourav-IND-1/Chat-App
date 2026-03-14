@@ -2,6 +2,9 @@ package com.example.chatapp.ui.navigation
 
 sealed class Screen(val route: String) {
     object Register : Screen("register")
+    object EmailInput : Screen("email_input")
+    object CheckEmail : Screen("check_email")
+    object ProfileSetup : Screen("profile_setup")
     object Home : Screen("home")
     object Search : Screen("search")
     object Profile : Screen("profile")

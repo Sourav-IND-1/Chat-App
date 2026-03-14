@@ -38,130 +38,124 @@ class AuthRepository(
 ) {
     companion object {
         private const val TAG = "AuthRepository"
-
-        // Web API key from obfuscated BuildConfig via ApiKeys
-        private val API_KEY = com.example.chatapp.data.network.ApiKeys.firebaseWebApi
-
-        private val SIGN_UP_URL =
-            "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=$API_KEY"
-        private val SIGN_IN_URL =
-            "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=$API_KEY"
-        private val UPDATE_PROFILE_URL =
-            "https://identitytoolkit.googleapis.com/v1/accounts:update?key=$API_KEY"
     }
 
     fun getCurrentUser(): FirebaseUser? = auth.currentUser
 
-    // ── REST helpers ─────────────────────────────────────────────
-
-    private suspend fun postJson(urlStr: String, body: JSONObject): JSONObject =
-        withContext(Dispatchers.IO) {
-            val conn = (URL(urlStr).openConnection() as HttpURLConnection).apply {
-                requestMethod = "POST"
-                setRequestProperty("Content-Type", "application/json")
-                doOutput = true
-                connectTimeout = 15_000
-                readTimeout = 15_000
-            }
-            OutputStreamWriter(conn.outputStream).use { it.write(body.toString()) }
-            val responseCode = conn.responseCode
-            val stream = if (responseCode in 200..299) conn.inputStream else conn.errorStream
-            val response = stream.bufferedReader().use { it.readText() }
-            JSONObject(response)
-        }
-
-    // ── Login ────────────────────────────────────────────────────
-    
-    // Login function removed: Replaced by One-Install-One-Account flow (forced registration)
-
-    // ── Register ─────────────────────────────────────────────────
+    // ── Email Link (Passwordless) Flow ───────────────────────────
 
     /**
-     * Full registration flow via REST (no reCAPTCHA pre-flight):
-     * 1. Create account via REST
-     * 2. Update displayName via REST
-     * 3. Sign in via SDK to populate auth.currentUser
-     * 4. Write profile to RTDB
-     * 5. Generate + publish EC key pair
+     * Step 1: Send the sign-in link to the user's email.
      */
-    suspend fun register(
+    suspend fun sendEmailLink(email: String, context: Context): AuthResult<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val actionCodeSettings = com.google.firebase.auth.ActionCodeSettings.newBuilder()
+                // The domain below must be in Firebase Console → Authentication → Settings → Authorised domains.
+                // For the link to open the app directly (not browser), Firebase Hosting must serve
+                // /.well-known/assetlinks.json at this domain. See walkthrough for setup steps.
+                .setUrl("https://chatting-27210.firebaseapp.com/login")
+                .setHandleCodeInApp(true)
+                .setAndroidPackageName(
+                    context.packageName,
+                    true, /* installIfNotAvailable */
+                    null /* minimumVersion */
+                )
+                .build()
+
+            auth.sendSignInLinkToEmail(email, actionCodeSettings).await()
+            AuthResult.Success(Unit)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to send email link", e)
+            AuthResult.Error(friendlyAuthError(e.message ?: "Failed to send login link"))
+        }
+    }
+
+    /**
+     * Step 2: Verify the email link clicked by the user.
+     * Returns true if it's a NEW user (needs profile setup), false if returning user.
+     */
+    suspend fun verifyEmailLink(
         email: String,
-        password: String,
-        name: String,
+        emailLink: String,
         context: Context
+    ): AuthResult<Boolean> = withContext(Dispatchers.IO) {
+        try {
+            if (!auth.isSignInWithEmailLink(emailLink)) {
+                return@withContext AuthResult.Error("Invalid or expired sign-in link.")
+            }
+
+            val authResult = auth.signInWithEmailLink(email, emailLink).await()
+            val user = authResult.user ?: throw Exception("Failed to authenticate locally")
+            val isNewUser = authResult.additionalUserInfo?.isNewUser == true
+
+            if (!isNewUser) {
+                // For returning users, just make sure we have their keys
+                val name = user.displayName ?: "User"
+                ensurePublicKey(context, user.uid, name)
+            }
+
+            // Return true if new user (needs profile setup), false otherwise
+            AuthResult.Success(isNewUser)
+        } catch (e: Exception) {
+            Log.e(TAG, "Email link verification failed", e)
+            AuthResult.Error(friendlyAuthError(e.message ?: "Failed to sign in with link"))
+        }
+    }
+
+    /**
+     * Step 3: Complete profile setup for NEW users.
+     */
+    suspend fun completeProfileSetup(
+        name: String,
+        context: Context,
+        profilePhotoUri: android.net.Uri? = null
     ): AuthResult<Unit> = withContext(Dispatchers.IO) {
         try {
+            val user = auth.currentUser ?: return@withContext AuthResult.Error("Not authenticated")
+            val uid = user.uid
+            val email = user.email ?: ""
             val lowercaseName = name.trim().lowercase()
 
-            // 1. Create account via REST to explicitly catch EMAIL_EXISTS
-            val signUpBody = JSONObject().apply {
-                put("email", email.trim())
-                put("password", password)
-                put("returnSecureToken", true)
-            }
-            val signUpResp = postJson(SIGN_UP_URL, signUpBody)
-
-            if (signUpResp.has("error")) {
-                val msg = signUpResp.getJSONObject("error").optString("message", "Registration failed")
-                if (msg.contains("EMAIL_EXISTS")) {
-                    Log.d(TAG, "Intercepted EMAIL_EXISTS. Attempting ghost account recovery...")
-                    return@withContext handleGhostAccountRecovery(email, password, name, context)
-                }
-                return@withContext AuthResult.Error(friendlyAuthError(msg))
-            }
-
-            val idToken = signUpResp.getString("idToken")
-            val uid = signUpResp.getString("localId")
-
-            // 2. Sign in via SDK immediately so we have `auth != null` for Security Rules
-            auth.signInWithEmailAndPassword(email.trim(), password).await()
-            val user = auth.currentUser ?: throw Exception("Failed to authenticate locally")
-
-            // 3. SECURE CLAIM: Check if username is taken now that we are authenticated
+            // 1. Claim username
             val usernameRef = rtdb.child("usernames").child(lowercaseName)
             val snapshot = usernameRef.get().await()
             
             if (snapshot.exists() && snapshot.getValue(String::class.java) != uid) {
-                // Name is taken by someone else! Rollback the account creation.
-                Log.d(TAG, "Registration failed: Username '$lowercaseName' is already taken. Rolling back auth...")
-                user.delete().await()
-                auth.signOut()
                 return@withContext AuthResult.Error("Username already taken. Please choose another one.")
             }
-
-            // 4. Claim the username
             usernameRef.setValue(uid).await()
 
-            // 5. Update Profile
-            val updateBody = JSONObject().apply {
-                put("idToken", idToken)
-                put("displayName", name.trim())
-                put("returnSecureToken", false)
-            }
-            postJson(UPDATE_PROFILE_URL, updateBody)
+            // 2. Update Firebase Profile
+            val profileUpdates = com.google.firebase.auth.UserProfileChangeRequest.Builder()
+                .setDisplayName(name.trim())
+                .build()
+            user.updateProfile(profileUpdates).await()
 
-            // 7. Write profile to RTDB
+            // 3. Upload photo
+            var photoUrl = ""
+            if (profilePhotoUri != null) {
+                val uploadedUrl = com.example.chatapp.utils.CloudinaryHelper.uploadProfilePhoto(context, profilePhotoUri)
+                if (uploadedUrl != null) {
+                    photoUrl = uploadedUrl
+                }
+            }
+
+            // 4. Write to RTDB users node
             val profileData = mapOf(
-                "name" to name,
+                "name" to name.trim(),
                 "status" to "Available",
-                "email" to email
+                "email" to email,
+                "profilePhotoUrl" to photoUrl
             )
             rtdb.child("users").child(uid).setValue(profileData).await()
 
-            // 8. Generate EC key pair + publish publicKey to RTDB
-            KeyManager.initIdentityKey(context, uid, name)
+            // 5. Generate Identity Keys
+            KeyManager.initIdentityKey(context, uid, name.trim())
 
             AuthResult.Success(Unit)
         } catch (e: Exception) {
-            // Failsafe cleanup of claimed username if anything below REST creation crashes
-            try {
-                val lowercaseName = name.trim().lowercase()
-                rtdb.child("usernames").child(lowercaseName).removeValue()
-            } catch (cleanupEx: Exception) {
-                Log.w(TAG, "Failed to cleanup claimed username after registration error", cleanupEx)
-            }
-            Log.e(TAG, "Registration failed", e)
-            AuthResult.Error(e.message ?: "An unknown error occurred")
+            Log.e(TAG, "Profile setup failed", e)
+            AuthResult.Error(e.message ?: "Profile setup failed")
         }
     }
 
@@ -171,7 +165,7 @@ class AuthRepository(
      * 2. Sign in or Create account in Firebase Auth
      * 3. Sync profile to RTDB and generate EC Keys
      */
-    suspend fun signInWithGoogle(context: Context, idToken: String): AuthResult<Unit> = withContext(Dispatchers.IO) {
+    suspend fun signInWithGoogle(context: Context, idToken: String): AuthResult<Boolean> = withContext(Dispatchers.IO) {
         try {
             val credential = com.google.firebase.auth.GoogleAuthProvider.getCredential(idToken, null)
             val authResult = auth.signInWithCredential(credential).await()
@@ -211,41 +205,13 @@ class AuthRepository(
                 ensurePublicKey(context, uid, name)
             }
 
-            AuthResult.Success(Unit)
+            AuthResult.Success(isNewUser)
         } catch (e: Exception) {
             Log.e(TAG, "Google Sign-In failed", e)
             AuthResult.Error(e.message ?: "Failed to sign in with Google")
         }
     }
-    /**
-     * If a user reinstalls, their FirebaseAuth cache is empty, but their account still exists in the cloud.
-     * When they try to register the same email, it throws EMAIL_EXISTS.
-     * We prove ownership by signing in, wipe the old "ghost" data completely, and then re-register fresh keys.
-     */
-    private suspend fun handleGhostAccountRecovery(
-        email: String,
-        password: String,
-        name: String,
-        context: Context
-    ): AuthResult<Unit> {
-        try {
-            // 1. Prove ownership of the ghost account
-            auth.signInWithEmailAndPassword(email, password).await()
-            val user = auth.currentUser ?: return AuthResult.Error("Failed to claim old account.")
-            
-            // 2. Obliterate the ghost account data and auth record
-            // The ghost account likely corresponds to the current name they are trying to register,
-            // but we use the ghost's actual profile displayName if possible.
-            val ghostName = user.displayName ?: name
-            deleteCurrentAccount(context, user.uid, ghostName)
-            
-            // 3. Retry registration from scratch now that the email is freed
-            return register(email, password, name, context)
-        } catch (e: Exception) {
-            Log.e(TAG, "Ghost account recovery failed", e)
-            return AuthResult.Error("Email already in use. If this is your old account, please double check the password to overwrite it.")
-        }
-    }
+
 
     // ── Profile ──────────────────────────────────────────────────
 

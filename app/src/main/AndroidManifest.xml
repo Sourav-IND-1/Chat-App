@@ -22,8 +22,28 @@
             android:theme="@style/Theme.ChatApp" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            
+            <!-- Firebase Email Link Interception via custom scheme (no hosting needed) -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="chatapp"
+                    android:host="login" />
+            </intent-filter>
+
+            <!-- Fallback: HTTPS deep link (requires Firebase Hosting + assetlinks.json) -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="chatting-27210.firebaseapp.com"
+                    android:pathPrefix="/login" />
             </intent-filter>
         </activity>
         <provider

@@ -399,8 +399,11 @@ class GroupRepository(
             "readBy" to mapOf(currentUserId to true)
         )
         
+        // Store options as a List in RTDB. Doing this avoids crashes
+        // if the option text contains restricted DB key characters like '.' or '#'
+        pollMap["pollOptions"] = options
+
         val optionsMap = options.associateWith { 0 }
-        pollMap["pollOptions"] = optionsMap // Initial votes are 0
 
         try {
             if (totalMembers > 1) {
@@ -636,8 +639,10 @@ class GroupRepository(
                         if (isPoll) {
                             val optionsMap = mutableMapOf<String, Int>()
                             // initialize options with 0
+                            // Support both legacy maps (key=Text, value=0) and new lists (value=Text)
                             msgSnapshot.child("pollOptions").children.forEach { optNode ->
-                                val text = optNode.key ?: return@forEach
+                                val value = optNode.value
+                                val text = if (value is String) value else optNode.key ?: return@forEach
                                 optionsMap[text] = 0
                             }
 
