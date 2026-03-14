@@ -28,7 +28,8 @@ android {
         if (localPropertiesFile.exists()) {
             localProperties.load(localPropertiesFile.inputStream())
         }
-        val googleClientId = localProperties.getProperty("GOOGLE_WEB_CLIENT_ID") ?: ""
+        val googleClientId = localProperties.getProperty("GOOGLE_WEB_CLIENT_ID")
+            ?: error("GOOGLE_WEB_CLIENT_ID is missing from local.properties.\nCopy local.properties.example to local.properties and fill in your Google Web Client ID.\nGet it from: Firebase Console → Project Settings → General → Your apps (Web app OAuth client ID)")
         buildConfigField("String", "GOOGLE_WEB_CLIENT_ID", "\"$googleClientId\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

@@ -1,0 +1,11 @@
+## Template for local.properties
+## Copy this file to local.properties and fill in your values.
+## local.properties is git-ignored and must NEVER be committed.
+
+# Android SDK location (update to match your machine)
+sdk.dir=C\:\\Users\\YOUR_USERNAME\\AppData\\Local\\Android\\Sdk
+
+# Google Web Client ID for Google Sign-In
+# Get this from: Firebase Console → Project Settings → General → Your apps → Web API Key
+# OR: Google Cloud Console → APIs & Services → Credentials → OAuth 2.0 Client IDs → Web client (auto created by Google Service)
+GOOGLE_WEB_CLIENT_ID=YOUR_GOOGLE_WEB_CLIENT_ID_HERE
